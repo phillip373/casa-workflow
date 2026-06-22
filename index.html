@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Casa Escondida — Module Workflows</title>
+<meta name="description" content="Eight Odoo 19 modules of Casa Escondida dive resort, fully modelled as BPMN 2.0 workflows." />
+<style>
+  :root {
+    --navy-900: #08182b;
+    --navy-800: #0d2238;
+    --navy-700: #143049;
+    --navy-600: #1c466b;
+    --teal: #4dc2e8;
+    --teal-dark: #2e9fc4;
+    --teal-soft: rgba(77, 194, 232, 0.12);
+    --teal-line: rgba(77, 194, 232, 0.32);
+    --sand: #eef3f7;
+    --bg: #f5f8fb;
+    --card: #ffffff;
+    --ink: #0d2233;
+    --muted: #5d7488;
+    --muted-2: #6a8096;
+    --line: #e2eaf1;
+    --shadow-sm: 0 1px 2px rgba(13, 34, 51, 0.06), 0 2px 8px rgba(13, 34, 51, 0.05);
+    --shadow-md: 0 6px 24px rgba(13, 34, 51, 0.10);
+    --shadow-lg: 0 18px 50px rgba(8, 24, 43, 0.18);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --sidebar-w: 290px;
+    --header-h: 64px;
+    --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--font);
+    color: var(--ink);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.55;
+  }
+  a { color: inherit; text-decoration: none; }
+  ::selection { background: var(--teal); color: #fff; }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    height: var(--header-h);
+    display: flex; align-items: center; gap: 14px;
+    padding: 0 22px;
+    background: rgba(8, 24, 43, 0.86);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    color: #eaf6fc;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-mark {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
+    display: grid; place-items: center;
+    box-shadow: 0 4px 14px rgba(77,194,232,0.45);
+    flex: none;
+  }
+  .brand-mark svg { width: 20px; height: 20px; display: block; }
+  .brand-name { font-weight: 700; letter-spacing: 0.2px; font-size: 15px; line-height: 1.1; }
+  .brand-sub { font-size: 11px; color: #8fb6cb; letter-spacing: 0.6px; text-transform: uppercase; }
+  .topbar-spacer { flex: 1; }
+  .topbar-tag {
+    font-size: 12px; color: #bfe2f0; padding: 6px 12px;
+    border: 1px solid var(--teal-line); border-radius: 999px;
+    background: rgba(77,194,232,0.08);
+  }
+  .menu-btn {
+    display: none; background: transparent; border: 1px solid rgba(255,255,255,0.18);
+    color: #eaf6fc; border-radius: 9px; width: 40px; height: 40px; cursor: pointer;
+  }
+
+  /* ---------- Shell ---------- */
+  .shell { display: flex; align-items: flex-start; }
+  .sidebar {
+    position: sticky; top: var(--header-h);
+    width: var(--sidebar-w); flex: none;
+    height: calc(100vh - var(--header-h));
+    overflow-y: auto;
+    background: #fff;
+    border-right: 1px solid var(--line);
+    padding: 18px 14px 40px;
+  }
+  .search-wrap { position: relative; margin-bottom: 14px; }
+  .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted-2); }
+  .search {
+    width: 100%; padding: 11px 12px 11px 36px; font-size: 13.5px; font-family: var(--font);
+    border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink);
+    outline: none; transition: border-color .15s, box-shadow .15s;
+  }
+  .search:focus { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-soft); background: #fff; }
+  .nav-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted-2); margin: 16px 8px 8px; font-weight: 600; }
+  .nav-item {
+    display: flex; align-items: center; gap: 11px; width: 100%;
+    padding: 9px 10px; border-radius: 11px; cursor: pointer;
+    border: 1px solid transparent; background: transparent; text-align: left;
+    color: var(--ink); font-family: var(--font); margin-bottom: 2px;
+    transition: background .14s, border-color .14s, transform .14s;
+  }
+  .nav-item:hover { background: var(--bg); }
+  .nav-item.active { background: var(--teal-soft); border-color: var(--teal-line); }
+  .nav-item.active .nav-ico { background: linear-gradient(135deg, var(--teal), var(--teal-dark)); color: #fff; box-shadow: 0 3px 10px rgba(77,194,232,0.4); }
+  .nav-ico {
+    width: 34px; height: 34px; border-radius: 9px; flex: none;
+    display: grid; place-items: center; font-size: 17px;
+    background: var(--bg); border: 1px solid var(--line);
+  }
+  .nav-txt { min-width: 0; }
+  .nav-title { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .nav-tagline { font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .nav-num { font-size: 11px; color: var(--muted-2); font-variant-numeric: tabular-nums; margin-left: auto; padding-left: 6px; }
+
+  /* ---------- Main ---------- */
+  .main { flex: 1; min-width: 0; min-height: calc(100vh - var(--header-h)); }
+  .view { animation: fade .35s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative; overflow: hidden; color: #eaf6fc;
+    background: radial-gradient(1200px 480px at 78% -10%, rgba(77,194,232,0.34), transparent 60%),
+                linear-gradient(160deg, #0a1d33 0%, #0d2740 48%, #103450 100%);
+    padding: 64px 48px 120px;
+  }
+  .hero::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 90px;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 90' preserveAspectRatio='none'><path d='M0 60 C 240 10 480 90 720 60 C 960 30 1200 80 1440 50 L1440 90 L0 90 Z' fill='%23f5f8fb'/></svg>") no-repeat;
+    background-size: cover;
+  }
+  .hero-inner { position: relative; max-width: 920px; }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; letter-spacing: 1px; text-transform: uppercase; color: #9fd6ea; border: 1px solid var(--teal-line); padding: 6px 14px; border-radius: 999px; background: rgba(77,194,232,0.08); }
+  .hero h1 { font-size: clamp(30px, 4.4vw, 50px); line-height: 1.06; margin: 20px 0 14px; font-weight: 800; letter-spacing: -0.5px; }
+  .hero h1 em { font-style: normal; color: var(--teal); }
+  .hero p { font-size: clamp(15px, 1.6vw, 19px); color: #c7dded; max-width: 660px; margin: 0 0 28px; }
+  .hero-stats { display: flex; flex-wrap: wrap; gap: 12px; }
+  .stat { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 12px 18px; backdrop-filter: blur(6px); }
+  .stat b { display: block; font-size: 22px; font-weight: 800; color: #fff; }
+  .stat span { font-size: 12.5px; color: #9fb9cc; }
+
+  /* ---------- Overview grid ---------- */
+  .section { padding: 0 48px 64px; max-width: 1240px; }
+  .section.pull { margin-top: -70px; position: relative; z-index: 2; }
+  .section.flow-section { padding-top: 64px; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 20px; }
+  .section-head h2 { font-size: 22px; font-weight: 750; margin: 0; }
+  .section-head .hint { font-size: 13px; color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 22px; cursor: pointer; position: relative; overflow: hidden;
+    box-shadow: var(--shadow-sm); transition: transform .18s, box-shadow .18s, border-color .18s;
+  }
+  .card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: linear-gradient(180deg, var(--teal), var(--teal-dark)); opacity: 0; transition: opacity .18s; }
+  .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--teal-line); }
+  .card:hover::before { opacity: 1; }
+  .card-top { display: flex; align-items: center; gap: 13px; margin-bottom: 13px; }
+  .card-ico { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; font-size: 23px; background: var(--teal-soft); border: 1px solid var(--teal-line); flex: none; }
+  .card-num { font-size: 12px; color: var(--muted-2); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .card-title { font-size: 17px; font-weight: 700; line-height: 1.2; }
+  .card-tagline { font-size: 13.5px; color: var(--muted); margin: 0 0 14px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chip { font-size: 11.5px; color: var(--teal-dark); background: var(--teal-soft); border: 1px solid var(--teal-line); padding: 4px 10px; border-radius: 999px; font-weight: 500; white-space: nowrap; }
+  .chip.muted { color: var(--muted); background: var(--bg); border-color: var(--line); }
+  .card-cta { margin-top: 16px; font-size: 13px; font-weight: 600; color: var(--teal-dark); display: inline-flex; align-items: center; gap: 6px; }
+  .card:hover .card-cta { gap: 10px; }
+
+  /* ---------- Detail view ---------- */
+  .detail { padding: 36px 48px 70px; max-width: 1180px; }
+  .crumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-bottom: 22px; }
+  .crumb a { color: var(--teal-dark); font-weight: 600; }
+  .crumb a:hover { text-decoration: underline; }
+  .detail-head { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 18px; }
+  .detail-ico { width: 60px; height: 60px; border-radius: 15px; display: grid; place-items: center; font-size: 30px; background: linear-gradient(135deg, var(--teal-soft), #fff); border: 1px solid var(--teal-line); flex: none; box-shadow: var(--shadow-sm); }
+  .detail-head h1 { font-size: 28px; margin: 2px 0 4px; font-weight: 800; letter-spacing: -0.3px; }
+  .detail-kicker { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--teal-dark); font-weight: 700; }
+  .detail-tagline { font-size: 15px; color: var(--muted); margin: 0; max-width: 720px; }
+  .stack-line { display: inline-flex; align-items: center; gap: 8px; margin: 16px 0 4px; font-size: 12.5px; font-weight: 600; color: var(--ink); background: var(--bg); border: 1px solid var(--line); padding: 7px 13px; border-radius: 999px; }
+  .stack-line svg { width: 14px; height: 14px; color: var(--teal-dark); }
+  .detail-chips { margin: 18px 0 26px; }
+
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); margin-bottom: 24px; overflow: hidden; }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+  .panel-head h3 { font-size: 15px; margin: 0; font-weight: 700; display: flex; align-items: center; gap: 9px; }
+  .panel-head h3 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 4px var(--teal-soft); }
+  .viewer-tools { display: flex; align-items: center; gap: 6px; }
+  .tool-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--line); background: #fff; cursor: pointer; color: var(--ink); display: grid; place-items: center; font-size: 15px; transition: background .14s, border-color .14s; }
+  .tool-btn:hover { background: var(--bg); border-color: var(--teal-line); }
+  .tool-btn.text { width: auto; padding: 0 12px; font-size: 12.5px; font-weight: 600; color: var(--teal-dark); gap: 6px; }
+  .viewer { background: linear-gradient(0deg, #fbfdfe, #fff); padding: 8px; overflow: auto; }
+  .viewer-canvas { transform-origin: top left; transition: transform .18s ease; display: inline-block; min-width: 100%; padding: 22px; }
+  .viewer-canvas img { display: block; max-width: none; height: auto; }
+
+  /* master information-flow viewer (fit-to-width, wide diagram) */
+  .flow-viewer { background: linear-gradient(0deg, #fbfdfe, #fff); padding: 16px; overflow: auto; }
+  .flow-viewer img { display: block; width: 100%; min-width: 720px; height: auto; }
+  .flow-grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 24px; align-items: start; margin-top: 22px; }
+  @media (max-width: 920px) { .flow-grid { grid-template-columns: 1fr; } }
+  .flow-caption { font-size: 13px; color: var(--muted); margin: 12px 2px 0; }
+
+  .twocol { display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; align-items: start; }
+  .steps { list-style: none; counter-reset: s; margin: 0; padding: 6px 4px; }
+  .steps li { counter-increment: s; position: relative; padding: 10px 0 10px 44px; border-bottom: 1px dashed var(--line); font-size: 14.5px; }
+  .steps li:last-child { border-bottom: none; }
+  .steps li::before { content: counter(s); position: absolute; left: 0; top: 8px; width: 28px; height: 28px; border-radius: 8px; background: var(--teal-soft); color: var(--teal-dark); border: 1px solid var(--teal-line); display: grid; place-items: center; font-size: 12.5px; font-weight: 700; }
+  .conn-group { margin-bottom: 18px; }
+  .conn-label { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--muted-2); font-weight: 700; margin-bottom: 9px; display: flex; align-items: center; gap: 7px; }
+  .conn-label .arr { color: var(--teal-dark); font-weight: 800; }
+  .conn-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 11px; margin-bottom: 8px; cursor: pointer; transition: border-color .14s, background .14s; background: #fff; }
+  .conn-item:hover { border-color: var(--teal-line); background: var(--teal-soft); }
+  .conn-item .ci-ico { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font-size: 16px; background: var(--bg); border: 1px solid var(--line); flex: none; }
+  .conn-item .ci-name { font-size: 13.5px; font-weight: 650; }
+  .conn-item .ci-label { font-size: 12px; color: var(--muted); }
+
+  .pager { display: flex; justify-content: space-between; gap: 14px; margin-top: 8px; }
+  .pager a { flex: 1; border: 1px solid var(--line); border-radius: 13px; padding: 14px 18px; background: #fff; box-shadow: var(--shadow-sm); transition: border-color .15s, transform .15s; }
+  .pager a:hover { border-color: var(--teal-line); transform: translateY(-2px); }
+  .pager .dir { font-size: 11.5px; color: var(--muted-2); text-transform: uppercase; letter-spacing: 0.6px; }
+  .pager .pg-name { font-size: 15px; font-weight: 700; color: var(--ink); margin-top: 2px; }
+  .pager .next { text-align: right; }
+  .pager .empty { visibility: hidden; }
+
+  /* ---------- Footer ---------- */
+  .footer { background: linear-gradient(160deg, #0a1d33, #0d2740); color: #c7dded; padding: 46px 48px; }
+  .footer-cta { max-width: 1240px; }
+  .footer-cta h3 { color: #fff; font-size: 22px; margin: 0 0 8px; }
+  .footer-cta p { margin: 0 0 4px; font-size: 14px; }
+  .footer-meta { margin-top: 26px; font-size: 12.5px; color: #7d9bb0; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px; display: flex; flex-wrap: wrap; gap: 8px 18px; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 900px) {
+    .menu-btn { display: grid; place-items: center; }
+    .sidebar {
+      position: fixed; top: var(--header-h); left: 0; z-index: 45;
+      transform: translateX(-100%); transition: transform .25s ease;
+      box-shadow: var(--shadow-lg); width: min(320px, 86vw);
+    }
+    .sidebar.open { transform: none; }
+    .scrim { position: fixed; inset: var(--header-h) 0 0 0; background: rgba(8,24,43,0.45); z-index: 44; opacity: 0; pointer-events: none; transition: opacity .25s; }
+    .scrim.show { opacity: 1; pointer-events: auto; }
+    .hero, .section, .detail, .footer { padding-left: 22px; padding-right: 22px; }
+    .twocol { grid-template-columns: 1fr; }
+  }
+  @media (min-width: 901px) { .scrim { display: none; } }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round"/></svg>
+    </button>
+    <a class="brand" href="#/overview">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 17c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2M2 12c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span>
+        <span class="brand-name">Casa Escondida</span><br/>
+        <span class="brand-sub">Module Workflows</span>
+      </span>
+    </a>
+    <span class="topbar-spacer"></span>
+    <span class="topbar-tag">Odoo 19 · BPMN 2.0</span>
+  </header>
+
+  <div class="scrim" id="scrim"></div>
+
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4" stroke-linecap="round"/></svg>
+        <input class="search" id="search" type="text" placeholder="Search modules…" autocomplete="off" />
+      </div>
+      <div class="nav-label">Overview</div>
+      <button class="nav-item" data-route="overview">
+        <span class="nav-ico">🗺️</span>
+        <span class="nav-txt">
+          <span class="nav-title">All modules</span>
+          <span class="nav-tagline">Information-flow overview</span>
+        </span>
+      </button>
+      <div class="nav-label">Modules</div>
+      <div id="navList"></div>
+    </aside>
+
+    <main class="main" id="main"></main>
+  </div>
+
+<script>
+const MODULES = [
+  {
+    id: "website", num: "01", icon: "🌐", title: "Website",
+    kicker: "Guest-facing booking portal",
+    tagline: "From the first click to a submitted booking request — with every inquiry channel captured and tracked.",
+    stack: "Odoo: Website · eCommerce · Link Tracker",
+    chips: ["Browse rooms & dives", "Check rates", "Capture inquiry", "Submit booking", "Analytics"],
+    steps: [
+      "Visitor arrives on the guest-facing portal.",
+      "Browses rooms, dive trips and packages.",
+      "Checks live dates and rates.",
+      "If not ready: the inquiry (Facebook / web / call) is captured as a lead.",
+      "If ready: submits a booking request.",
+      "The booking is sent on to CRM / PMS."
+    ],
+    receives: [],
+    sends: [ { to: "crm-pms", label: "Booking request" } ]
+  },
+  {
+    id: "crm-pms", num: "02", icon: "🛎️", title: "CRM / PMS",
+    kicker: "Reservations & dive scheduling",
+    tagline: "Turns a booking into a confirmed stay: sales order, dive & boat schedule, divemaster assignment and equipment hand-off.",
+    stack: "Odoo: CRM · Sales · Calendar",
+    chips: ["Sales order", "Reservation", "Dive scheduling", "Divemaster", "Boat planning"],
+    steps: [
+      "Booking is received from the website or an OTA (Booking.com / Tripadvisor).",
+      "Creates the sales order / room reservation.",
+      "Schedules the dive trips and boat.",
+      "Assigns the divemaster and notifies the crew.",
+      "Hands the request to Equipment Reservation to reserve gear & amenities.",
+      "The stay is confirmed."
+    ],
+    receives: [ { from: "website", label: "Booking request" } ],
+    sends: [ { to: "equipment-reservation", label: "Reserve equipment & amenities" } ]
+  },
+  {
+    id: "equipment-reservation", num: "03", icon: "🤿", title: "Equipment Reservation",
+    kicker: "Gear & amenity allocation",
+    tagline: "Checks serviceability and availability, then allocates diving equipment and room amenities for the stay.",
+    stack: "Odoo: Rental · Maintenance · Inventory",
+    chips: ["Availability", "Serviceability", "Allocate gear", "Room amenities", "Alternatives"],
+    steps: [
+      "A reservation request arrives from CRM / PMS.",
+      "Checks gear and amenity availability.",
+      "If not serviceable or unavailable: picks an alternative or flags it.",
+      "Allocates the equipment and amenities.",
+      "Equipment is reserved for the guest."
+    ],
+    receives: [ { from: "crm-pms", label: "Reservation request" } ],
+    sends: [ { to: "inventory", label: "Gear allocation" }, { to: "maintenance", label: "Serviceability check" } ]
+  },
+  {
+    id: "folio", num: "04", icon: "🧾", title: "Folio",
+    kicker: "Central guest charges hub",
+    tagline: "Opens at check-in and accumulates room, diving and point-of-sale charges until the guest settles up.",
+    stack: "Odoo: PMS Folio · Sales · Account",
+    chips: ["Open folio", "Room charges", "Diving charges", "POS charges", "Settlement"],
+    steps: [
+      "Guest checks in and a folio is opened.",
+      "Room and diving charges are posted from the booking.",
+      "POS charges (dive shop rentals, restaurant) are added through the stay.",
+      "Payment is received at checkout.",
+      "The folio is sent to Accounting for settlement and closed."
+    ],
+    receives: [ { from: "website", label: "Room & diving charges" }, { from: "point-of-sales", label: "POS charges" } ],
+    sends: [ { to: "accounting", label: "Folio settlement" } ]
+  },
+  {
+    id: "point-of-sales", num: "05", icon: "🛒", title: "Point of Sales",
+    kicker: "Restaurant, bar & dive shop",
+    tagline: "Rings up F&B and gear rentals, posts the charge to the guest folio, and reports stock depletion to Inventory.",
+    stack: "Odoo: Point of Sale · Inventory",
+    chips: ["POS order", "Serve / issue gear", "Post to folio", "Stock depletion"],
+    steps: [
+      "Guest orders food & drink or rents dive gear.",
+      "A POS order is created.",
+      "Staff serve the order or issue the gear.",
+      "The charge is posted to the guest folio.",
+      "Stock depletion is reported to Inventory.",
+      "The sale is completed."
+    ],
+    receives: [ { from: "folio", label: "Guest order" } ],
+    sends: [ { to: "folio", label: "POS charge" }, { to: "inventory", label: "Stock depletion" } ]
+  },
+  {
+    id: "inventory", num: "06", icon: "📦", title: "Inventory",
+    kicker: "Stock, gear & procurement",
+    tagline: "Updates stock from every sale, registers gear for maintenance, flags reorders, and refreshes inventory reports.",
+    stack: "Odoo: Inventory · Reordering rules",
+    chips: ["Stock levels", "Gear registry", "Reorder point", "Restock", "Reports"],
+    steps: [
+      "A stock movement is logged (sale, rental return, adjustment).",
+      "Stock levels are updated.",
+      "Gear is registered as equipment for Maintenance.",
+      "If below the reorder point: a restock / procurement task is raised.",
+      "The inventory report is refreshed.",
+      "Inventory is up to date."
+    ],
+    receives: [ { from: "point-of-sales", label: "Stock depletion" }, { from: "equipment-reservation", label: "Gear allocation" }, { from: "maintenance", label: "Block unserviceable gear" } ],
+    sends: [ { to: "maintenance", label: "Register gear as equipment" } ]
+  },
+  {
+    id: "maintenance", num: "07", icon: "🔧", title: "Maintenance",
+    kicker: "Equipment servicing & safety",
+    tagline: "Logs preventive and corrective work, services the gear, and blocks anything unserviceable from being rented.",
+    stack: "Odoo: Maintenance",
+    chips: ["Equipment registry", "Preventive", "Corrective", "Block gear", "Reports"],
+    steps: [
+      "Gear is registered from Inventory, or an issue is raised.",
+      "A preventive or corrective request is logged.",
+      "The equipment is inspected and serviced.",
+      "If unserviceable: the gear is blocked and Inventory is notified — gear retired.",
+      "If serviceable: the gear is returned to service and the request is closed."
+    ],
+    receives: [ { from: "inventory", label: "Register gear as equipment" } ],
+    sends: [ { to: "inventory", label: "Block unserviceable gear" } ]
+  },
+  {
+    id: "accounting", num: "08", icon: "💰", title: "Accounting",
+    kicker: "Invoicing, BIR & reconciliation",
+    tagline: "Generates BIR-compliant invoices, posts journal entries, and reconciles cash, GCash and bank across every revenue stream.",
+    stack: "Odoo: Accounting · Invoicing",
+    chips: ["BIR invoice", "Journal entries", "Reconciliation", "Receipts"],
+    steps: [
+      "A folio settlement is received from Folio.",
+      "A BIR-compliant invoice & receipt is generated.",
+      "Journal entries are posted to the chart of accounts.",
+      "Cash, GCash and bank streams are reconciled.",
+      "The invoice / receipt is issued to the guest.",
+      "The books are updated."
+    ],
+    receives: [ { from: "folio", label: "Folio settlement" } ],
+    sends: [ { to: "guest", label: "Invoice / receipt" } ]
+  }
+];
+
+const byId = Object.fromEntries(MODULES.map(m => [m.id, m]));
+const GUEST = { id: "guest", icon: "🧳", title: "Guest" };
+const main = document.getElementById("main");
+const navList = document.getElementById("navList");
+const sidebar = document.getElementById("sidebar");
+const scrim = document.getElementById("scrim");
+
+/* ---------- Sidebar ---------- */
+function buildNav() {
+  navList.innerHTML = MODULES.map(m => `
+    <button class="nav-item" data-route="${m.id}" data-name="${m.title.toLowerCase()} ${m.kicker.toLowerCase()}">
+      <span class="nav-ico">${m.icon}</span>
+      <span class="nav-txt">
+        <span class="nav-title">${m.title}</span>
+        <span class="nav-tagline">${m.kicker}</span>
+      </span>
+      <span class="nav-num">${m.num}</span>
+    </button>`).join("");
+}
+
+function setActiveNav(route) {
+  document.querySelectorAll(".nav-item").forEach(el => {
+    el.classList.toggle("active", el.dataset.route === route);
+  });
+}
+
+document.getElementById("search").addEventListener("input", e => {
+  const q = e.target.value.trim().toLowerCase();
+  document.querySelectorAll('#navList .nav-item').forEach(el => {
+    el.style.display = !q || el.dataset.name.includes(q) ? "" : "none";
+  });
+});
+
+/* ---------- Views ---------- */
+function overviewView() {
+  return `
+  <div class="view">
+    <section class="hero">
+      <div class="hero-inner">
+        <span class="hero-eyebrow">🌊 Dive Resort ERP · Information Flow</span>
+        <h1>Eight modules. <em>One dive resort,</em> fully modelled.</h1>
+        <p>Every Casa Escondida operation — from a website enquiry to a BIR-compliant receipt — mapped as a clean BPMN&nbsp;2.0 workflow on Odoo&nbsp;19.</p>
+        <div class="hero-stats">
+          <div class="stat"><b>8</b><span>Modules</span></div>
+          <div class="stat"><b>BPMN&nbsp;2.0</b><span>OMG standard</span></div>
+          <div class="stat"><b>Odoo&nbsp;19</b><span>Live in production</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="section flow-section">
+      <div class="section-head">
+        <h2>End-to-end information flow</h2>
+        <span class="hint">How a booking becomes a receipt across all 8 modules</span>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <h3><span class="dot"></span>Information workflow · v4</h3>
+          <div class="viewer-tools">
+            <a class="tool-btn text" href="diagrams/information-flow.svg" target="_blank" rel="noopener">Open full ↗</a>
+          </div>
+        </div>
+        <div class="flow-viewer">
+          <img src="diagrams/information-flow.svg" alt="Casa Escondida end-to-end information workflow (v4)" />
+        </div>
+      </div>
+      <div class="flow-grid">
+        <div class="panel" style="padding:18px 22px 8px">
+          <div class="panel-head" style="padding:0 0 4px;border:none"><h3><span class="dot"></span>How information moves, in order</h3></div>
+          <ol class="steps">
+            <li>A guest browses the <b>Website</b> — rooms, activities, dive trips, packages — and submits a booking enquiry.</li>
+            <li>The enquiry flows to <b>CRM/PMS</b>, which opens a Sales Order and schedules room reservations, dives and boats.</li>
+            <li><b>CRM/PMS</b> allocates room amenities and diving gear through <b>Equipment Reservation</b>.</li>
+            <li><b>Equipment Reservation</b> draws that gear from <b>Inventory</b> (dive gear, F&amp;B supplies, warehouses).</li>
+            <li><b>Inventory</b> registers gear with <b>Maintenance</b>; <b>Maintenance</b> blocks any unserviceable gear back to Inventory.</li>
+            <li>Room &amp; diving charges post to the guest <b>Folio</b> — the central charges hub.</li>
+            <li>On-site spend at <b>Point of Sales</b> (restaurant, bar, dive-shop rentals) posts to the Folio and depletes <b>Inventory</b> (stock depletion).</li>
+            <li>At checkout the guest pays the Folio; <b>Accounting</b> settles it into a BIR-compliant invoice/receipt returned to the guest.</li>
+          </ol>
+        </div>
+        <div class="panel" style="padding:18px 20px 10px">
+          <div class="panel-head" style="padding:0 0 4px;border:none"><h3><span class="dot"></span>Reading the diagram</h3></div>
+          <div class="conn-group">
+            <div class="conn-label"><span class="arr">▸</span> Solid arrows · flow</div>
+            <p class="flow-caption">Operational hand-offs between modules (booking, charges, payment, depletion).</p>
+          </div>
+          <div class="conn-group">
+            <div class="conn-label"><span class="arr">▸</span> Red arrows · information item</div>
+            <p class="flow-caption">Documents that cross a system boundary — the booking enquiry into CRM/PMS, gear registration to Maintenance, and the invoice/receipt back to the guest.</p>
+          </div>
+          <div class="conn-group">
+            <div class="conn-label"><span class="arr">▸</span> Folio · the hub</div>
+            <p class="flow-caption">Every guest charge — rooms, dives, restaurant, rentals — converges on the Folio before it settles in Accounting.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section-head">
+        <h2>Explore by module</h2>
+        <span class="hint">Click any card to open its workflow</span>
+      </div>
+      <div class="grid">
+        ${MODULES.map(m => `
+          <article class="card" data-route="${m.id}">
+            <div class="card-top">
+              <span class="card-ico">${m.icon}</span>
+              <span>
+                <span class="card-num">Module ${m.num}</span>
+                <div class="card-title">${m.title}</div>
+              </span>
+            </div>
+            <p class="card-tagline">${m.kicker}.</p>
+            <div class="chips">${m.chips.slice(0,3).map(c => `<span class="chip">${c}</span>`).join("")}
+              ${m.chips.length>3?`<span class="chip muted">+${m.chips.length-3}</span>`:""}</div>
+            <span class="card-cta">View workflow →</span>
+          </article>`).join("")}
+      </div>
+    </section>
+    <footer class="footer">
+      <div class="footer-cta">
+        <h3>From process to value</h3>
+        <p>Each diagram is generated from a Logic-Core model and rendered with the BPMN pipeline — re-runnable whenever the resort's operations change.</p>
+        <div class="footer-meta">
+          <span>Casa Escondida · Odoo 19 ERP</span><span>·</span>
+          <span>BPMN 2.0 via bpmn-generator (ElkJS layout)</span><span>·</span>
+          <span>Information flow v4</span>
+        </div>
+      </div>
+    </footer>
+  </div>`;
+}
+
+function connItem(node, label) {
+  const m = node === "guest" ? GUEST : byId[node];
+  const clickable = node !== "guest";
+  return `<div class="conn-item" ${clickable?`data-route="${node}"`:""} ${clickable?"":'style="cursor:default"'}>
+      <span class="ci-ico">${m.icon}</span>
+      <span><span class="ci-name">${m.title}</span><br/><span class="ci-label">${label}</span></span>
+    </div>`;
+}
+
+function moduleView(m) {
+  const idx = MODULES.findIndex(x => x.id === m.id);
+  const prev = MODULES[idx - 1], next = MODULES[idx + 1];
+  return `
+  <div class="view">
+    <div class="detail">
+      <nav class="crumb"><a data-route="overview">All modules</a> <span>/</span> <span>${m.title}</span></nav>
+      <div class="detail-head">
+        <span class="detail-ico">${m.icon}</span>
+        <div>
+          <span class="detail-kicker">Module ${m.num} · ${m.kicker}</span>
+          <h1>${m.title}</h1>
+          <p class="detail-tagline">${m.tagline}</p>
+          <span class="stack-line">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9" stroke-linecap="round"/></svg>
+            ${m.stack}
+          </span>
+        </div>
+      </div>
+      <div class="detail-chips chips">${m.chips.map(c => `<span class="chip">${c}</span>`).join("")}</div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3><span class="dot"></span>Workflow diagram</h3>
+          <div class="viewer-tools">
+            <button class="tool-btn" data-zoom="out" title="Zoom out">−</button>
+            <button class="tool-btn" data-zoom="reset" title="Reset">⤢</button>
+            <button class="tool-btn" data-zoom="in" title="Zoom in">+</button>
+            <a class="tool-btn text" href="diagrams/${m.id}.svg" target="_blank" rel="noopener">Open full ↗</a>
+          </div>
+        </div>
+        <div class="viewer" id="viewer">
+          <div class="viewer-canvas" id="canvas">
+            <img src="diagrams/${m.id}.svg" alt="${m.title} BPMN workflow" />
+          </div>
+        </div>
+      </div>
+
+      <div class="twocol">
+        <div class="panel">
+          <div class="panel-head"><h3><span class="dot"></span>What happens</h3></div>
+          <ol class="steps" style="padding:14px 20px">${m.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+        </div>
+        <div>
+          <div class="panel" style="padding:18px 18px 6px">
+            ${m.receives.length ? `<div class="conn-group">
+              <div class="conn-label"><span class="arr">▾</span> Receives from</div>
+              ${m.receives.map(r => connItem(r.from, r.label)).join("")}
+            </div>` : ""}
+            ${m.sends.length ? `<div class="conn-group">
+              <div class="conn-label"><span class="arr">▸</span> Sends to</div>
+              ${m.sends.map(s => connItem(s.to, s.label)).join("")}
+            </div>` : ""}
+          </div>
+        </div>
+      </div>
+
+      <div class="pager">
+        ${prev ? `<a data-route="${prev.id}"><div class="dir">← Previous</div><div class="pg-name">${prev.icon} ${prev.title}</div></a>` : `<a class="empty"></a>`}
+        ${next ? `<a class="next" data-route="${next.id}"><div class="dir">Next →</div><div class="pg-name">${next.title} ${next.icon}</div></a>` : `<a class="empty"></a>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- Diagram zoom ---------- */
+let zoom = 1;
+function applyZoom() {
+  const c = document.getElementById("canvas");
+  if (c) c.style.transform = `scale(${zoom})`;
+}
+function bindZoom() {
+  document.querySelectorAll("[data-zoom]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const a = btn.dataset.zoom;
+      if (a === "in") zoom = Math.min(2.4, zoom + 0.2);
+      else if (a === "out") zoom = Math.max(0.5, zoom - 0.2);
+      else zoom = 1;
+      applyZoom();
+    });
+  });
+}
+
+/* ---------- Router ---------- */
+function render() {
+  let route = (location.hash.replace(/^#\/?/, "") || "overview");
+  if (route !== "overview" && !byId[route]) route = "overview";
+  zoom = 1;
+  if (route === "overview") { main.innerHTML = overviewView(); }
+  else { main.innerHTML = moduleView(byId[route]); bindZoom(); }
+  setActiveNav(route);
+  window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+  closeSidebar();
+}
+
+/* ---------- Navigation events (delegated) ---------- */
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-route]");
+  if (!el) return;
+  e.preventDefault();
+  location.hash = "#/" + el.dataset.route;
+});
+
+/* ---------- Mobile sidebar ---------- */
+function openSidebar() { sidebar.classList.add("open"); scrim.classList.add("show"); }
+function closeSidebar() { sidebar.classList.remove("open"); scrim.classList.remove("show"); }
+document.getElementById("menuBtn").addEventListener("click", () => {
+  sidebar.classList.contains("open") ? closeSidebar() : openSidebar();
+});
+scrim.addEventListener("click", closeSidebar);
+
+window.addEventListener("hashchange", render);
+buildNav();
+render();
+</script>
+</body>
+</html>
