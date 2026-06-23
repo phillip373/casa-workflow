@@ -316,21 +316,56 @@ const MODULES = [
     id: "crm-pms", num: "02", icon: "🛎️", title: "CRM / PMS",
     kicker: "Reservations & dive scheduling",
     tagline: "Turns a booking into a confirmed stay: sales order, dive & boat schedule, divemaster assignment and equipment hand-off.",
-    stack: "Odoo: CRM · Sales · Calendar",
+    stack: "Odoo: CRM · Sales · Calendar · Sign",
     chips: ["Sales order", "Reservation", "Dive scheduling", "Divemaster", "Boat planning"],
     steps: [
       "Booking is received from the website or an OTA (Booking.com / Tripadvisor).",
       "Creates the sales order / room reservation.",
-      "Schedules the dive trips and boat.",
+      "Confirms dive-trip slots and the boat via Calendar.",
+      "Sends the guest a liability waiver through Sign.",
       "Assigns the divemaster and notifies the crew.",
       "Hands the request to Equipment Reservation to reserve gear & amenities.",
       "The stay is confirmed."
     ],
-    receives: [ { from: "website", label: "Booking request" } ],
-    sends: [ { to: "equipment-reservation", label: "Reserve equipment & amenities" } ]
+    receives: [ { from: "website", label: "Booking request" }, { from: "calendar", label: "Confirmed slots & availability" }, { from: "sign", label: "Signed waiver" } ],
+    sends: [ { to: "calendar", label: "Dive & activity schedule request" }, { to: "sign", label: "Waiver request" }, { to: "equipment-reservation", label: "Reserve equipment & amenities" } ]
   },
   {
-    id: "equipment-reservation", num: "03", icon: "🤿", title: "Equipment Reservation",
+    id: "calendar", num: "03", icon: "📅", title: "Calendar",
+    kicker: "Scheduling & availability",
+    tagline: "Maintains dive-trip slots, boat departures and instructor availability, then syncs confirmed schedules back to CRM / PMS.",
+    stack: "Odoo: Calendar · Appointments",
+    chips: ["Dive trip slots", "Boat departures", "Instructor roster", "Resource availability", "Schedule sync"],
+    steps: [
+      "A schedule request is received from CRM / PMS.",
+      "Checks resource availability (boat, instructor, slot).",
+      "If no slot is available: proposes an alternative.",
+      "If available: reserves the calendar slot.",
+      "Syncs the confirmed schedule back to CRM / PMS.",
+      "The trip is scheduled."
+    ],
+    receives: [ { from: "crm-pms", label: "Dive & activity schedule request" } ],
+    sends: [ { to: "crm-pms", label: "Confirmed slots & availability" } ]
+  },
+  {
+    id: "sign", num: "04", icon: "✍️", title: "Sign",
+    kicker: "E-signature & waivers",
+    tagline: "Issues liability waivers and gear-rental agreements for digital signature, clearing guests to dive once signed.",
+    stack: "Odoo: Sign",
+    chips: ["Liability waivers", "Rental agreements", "Medical declarations", "Signed archive", "Clearance"],
+    steps: [
+      "A signature request arrives from CRM / PMS (booking) or POS (rental).",
+      "Prepares the waiver or rental agreement.",
+      "Sends the document to the guest.",
+      "The guest reviews and signs.",
+      "If not signed in full: the dive / rental is held — not cleared.",
+      "If signed: the document is filed and CRM / PMS & POS are notified — cleared to dive."
+    ],
+    receives: [ { from: "crm-pms", label: "Waiver request" }, { from: "point-of-sales", label: "Rental agreement request" } ],
+    sends: [ { to: "crm-pms", label: "Signed waiver" }, { to: "point-of-sales", label: "Signed rental agreement" } ]
+  },
+  {
+    id: "equipment-reservation", num: "05", icon: "🤿", title: "Equipment Reservation",
     kicker: "Gear & amenity allocation",
     tagline: "Checks serviceability and availability, then allocates diving equipment and room amenities for the stay.",
     stack: "Odoo: Rental · Maintenance · Inventory",
@@ -346,7 +381,7 @@ const MODULES = [
     sends: [ { to: "inventory", label: "Gear allocation" }, { to: "maintenance", label: "Serviceability check" } ]
   },
   {
-    id: "folio", num: "04", icon: "🧾", title: "Folio",
+    id: "folio", num: "06", icon: "🧾", title: "Folio",
     kicker: "Central guest charges hub",
     tagline: "Opens at check-in and accumulates room, diving and point-of-sale charges until the guest settles up.",
     stack: "Odoo: PMS Folio · Sales · Account",
@@ -362,7 +397,7 @@ const MODULES = [
     sends: [ { to: "accounting", label: "Folio settlement" } ]
   },
   {
-    id: "point-of-sales", num: "05", icon: "🛒", title: "Point of Sales",
+    id: "point-of-sales", num: "07", icon: "🛒", title: "Point of Sales",
     kicker: "Restaurant, bar & dive shop",
     tagline: "Rings up F&B and gear rentals, posts the charge to the guest folio, and reports stock depletion to Inventory.",
     stack: "Odoo: Point of Sale · Inventory",
@@ -370,16 +405,17 @@ const MODULES = [
     steps: [
       "Guest orders food & drink or rents dive gear.",
       "A POS order is created.",
+      "For gear rentals: a signed agreement is obtained via Sign.",
       "Staff serve the order or issue the gear.",
       "The charge is posted to the guest folio.",
       "Stock depletion is reported to Inventory.",
       "The sale is completed."
     ],
-    receives: [ { from: "folio", label: "Guest order" } ],
-    sends: [ { to: "folio", label: "POS charge" }, { to: "inventory", label: "Stock depletion" } ]
+    receives: [ { from: "folio", label: "Guest order" }, { from: "sign", label: "Signed rental agreement" } ],
+    sends: [ { to: "sign", label: "Rental agreement request" }, { to: "folio", label: "POS charge" }, { to: "inventory", label: "Stock depletion" } ]
   },
   {
-    id: "inventory", num: "06", icon: "📦", title: "Inventory",
+    id: "inventory", num: "08", icon: "📦", title: "Inventory",
     kicker: "Stock, gear & procurement",
     tagline: "Updates stock from every sale, registers gear for maintenance, flags reorders, and refreshes inventory reports.",
     stack: "Odoo: Inventory · Reordering rules",
@@ -396,7 +432,7 @@ const MODULES = [
     sends: [ { to: "maintenance", label: "Register gear as equipment" } ]
   },
   {
-    id: "maintenance", num: "07", icon: "🔧", title: "Maintenance",
+    id: "maintenance", num: "09", icon: "🔧", title: "Maintenance",
     kicker: "Equipment servicing & safety",
     tagline: "Logs preventive and corrective work, services the gear, and blocks anything unserviceable from being rented.",
     stack: "Odoo: Maintenance",
@@ -412,7 +448,7 @@ const MODULES = [
     sends: [ { to: "inventory", label: "Block unserviceable gear" } ]
   },
   {
-    id: "accounting", num: "08", icon: "💰", title: "Accounting",
+    id: "accounting", num: "10", icon: "💰", title: "Accounting",
     kicker: "Invoicing, BIR & reconciliation",
     tagline: "Generates BIR-compliant invoices, posts journal entries, and reconciles cash, GCash and bank across every revenue stream.",
     stack: "Odoo: Accounting · Invoicing",
@@ -470,10 +506,10 @@ function overviewView() {
     <section class="hero">
       <div class="hero-inner">
         <span class="hero-eyebrow">🌊 Dive Resort ERP · Information Flow</span>
-        <h1>Eight modules. <em>One dive resort,</em> fully modelled.</h1>
+        <h1>Ten modules. <em>One dive resort,</em> fully modelled.</h1>
         <p>Every Casa Escondida operation — from a website enquiry to a BIR-compliant receipt — mapped as a clean BPMN&nbsp;2.0 workflow on Odoo&nbsp;19.</p>
         <div class="hero-stats">
-          <div class="stat"><b>8</b><span>Modules</span></div>
+          <div class="stat"><b>10</b><span>Modules</span></div>
           <div class="stat"><b>BPMN&nbsp;2.0</b><span>OMG standard</span></div>
           <div class="stat"><b>Odoo&nbsp;19</b><span>Live in production</span></div>
         </div>
@@ -482,17 +518,17 @@ function overviewView() {
     <section class="section flow-section">
       <div class="section-head">
         <h2>End-to-end information flow</h2>
-        <span class="hint">How a booking becomes a receipt across all 8 modules</span>
+        <span class="hint">How a booking becomes a receipt across all 10 modules</span>
       </div>
       <div class="panel">
         <div class="panel-head">
-          <h3><span class="dot"></span>Information workflow · v5</h3>
+          <h3><span class="dot"></span>Information workflow · v6</h3>
           <div class="viewer-tools">
             <a class="tool-btn text" href="diagrams/information-flow.svg" target="_blank" rel="noopener">Open full ↗</a>
           </div>
         </div>
         <div class="flow-viewer">
-          <img src="diagrams/information-flow.svg" alt="Casa Escondida end-to-end information workflow (v5)" />
+          <img src="diagrams/information-flow.svg" alt="Casa Escondida end-to-end information workflow (v6)" />
         </div>
       </div>
       <div class="flow-grid">
@@ -500,12 +536,14 @@ function overviewView() {
           <div class="panel-head" style="padding:0 0 4px;border:none"><h3><span class="dot"></span>How information moves, in order</h3></div>
           <ol class="steps">
             <li>A guest browses the <b>Website</b> — rooms, activities, dive trips, packages — and submits a booking enquiry.</li>
-            <li>The enquiry flows to <b>CRM/PMS</b>, which opens a Sales Order and schedules room reservations, dives and boats.</li>
+            <li>The enquiry flows to <b>CRM/PMS</b>, which opens a Sales Order and reserves the stay.</li>
+            <li><b>CRM/PMS</b> confirms dive-trip slots, boats and instructors against the <b>Calendar</b>, which syncs availability back.</li>
+            <li>A liability waiver goes out through <b>Sign</b>; once the guest signs, CRM/PMS and POS are cleared to dive.</li>
             <li><b>CRM/PMS</b> allocates room amenities and diving gear through <b>Equipment Reservation</b>.</li>
             <li><b>Equipment Reservation</b> draws that gear from <b>Inventory</b> (dive gear, F&amp;B supplies, warehouses).</li>
             <li><b>Inventory</b> registers gear with <b>Maintenance</b>; <b>Maintenance</b> blocks any unserviceable gear back to Inventory.</li>
             <li>Room &amp; diving charges post to the guest <b>Folio</b> — the central charges hub.</li>
-            <li>On-site spend at <b>Point of Sales</b> (restaurant, bar, dive-shop rentals) posts to the Folio and depletes <b>Inventory</b> (stock depletion).</li>
+            <li>On-site spend at <b>Point of Sales</b> (restaurant, bar, dive-shop rentals) posts to the Folio and depletes <b>Inventory</b>; gear rentals are gated by a signed agreement from <b>Sign</b>.</li>
             <li>At checkout the guest pays the Folio; <b>Accounting</b> settles it into a BIR-compliant invoice/receipt returned to the guest.</li>
           </ol>
         </div>
@@ -555,7 +593,7 @@ function overviewView() {
         <div class="footer-meta">
           <span>Casa Escondida · Odoo 19 ERP</span><span>·</span>
           <span>BPMN 2.0 via bpmn-generator (ElkJS layout)</span><span>·</span>
-          <span>Information flow v5</span>
+          <span>Information flow v6</span>
         </div>
       </div>
     </footer>
