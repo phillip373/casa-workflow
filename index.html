@@ -336,12 +336,12 @@ const MODULES = [
     id: "crm-pms", num: "02", icon: "🛎️", title: "CRM / PMS",
     kicker: "Reservations & dive scheduling",
     tagline: "Turns a booking into a confirmed stay: sales order, dive & boat schedule, divemaster assignment and equipment hand-off.",
-    stack: "Odoo: CRM · Sales · Calendar · Sign",
+    stack: "Odoo: CRM · Sales · Planning · Sign",
     chips: ["Sales order", "Reservation", "Dive scheduling", "Divemaster", "Boat planning"],
     steps: [
       "Booking is received from the website or an OTA (Booking.com / Tripadvisor).",
       "Creates the sales order / room reservation.",
-      "Confirms dive-trip slots and the boat via Calendar.",
+      "Confirms dive-trip slots and the boat via Planning.",
       "Sends the guest a liability waiver through Sign.",
       "Assigns the divemaster and notifies the crew.",
       "Hands the request to Equipment Reservation to reserve gear & amenities.",
@@ -351,16 +351,16 @@ const MODULES = [
     sends: [ { to: "calendar", label: "Dive & activity schedule request" }, { to: "sign", label: "Waiver request" }, { to: "equipment-reservation", label: "Reserve equipment & amenities" } ]
   },
   {
-    id: "calendar", num: "03", icon: "📅", title: "Calendar",
+    id: "calendar", num: "03", icon: "📅", title: "Planning",
     kicker: "Scheduling & availability",
     tagline: "Maintains dive-trip slots, boat departures and instructor availability, then syncs confirmed schedules back to CRM / PMS.",
-    stack: "Odoo: Calendar · Appointments",
+    stack: "Odoo: Planning · Appointments",
     chips: ["Dive trip slots", "Boat departures", "Instructor roster", "Resource availability", "Schedule sync"],
     steps: [
       "A schedule request is received from CRM / PMS.",
       "Checks resource availability (boat, instructor, slot).",
       "If no slot is available: proposes an alternative.",
-      "If available: reserves the calendar slot.",
+      "If available: reserves the planning slot.",
       "Syncs the confirmed schedule back to CRM / PMS.",
       "The trip is scheduled."
     ],
@@ -508,13 +508,13 @@ const PAINPOINTS = [
   {
     id: "pain04", num: "04", title: "Scattered booking channels",
     pain: "Enquiries arrive on Facebook, WhatsApp, Viber, email and Instagram — managed by hand, hard to translate.",
-    lanes: ["Website", "CRM / PMS", "Calendar"],
-    fix: "Every channel is captured as a lead, centralized in CRM, and scheduled against the calendar in one place."
+    lanes: ["Website", "CRM / PMS", "Planning"],
+    fix: "Every channel is captured as a lead, centralized in CRM, and scheduled in Planning in one place."
   },
   {
     id: "pain05", num: "05", title: "Miscommunication",
     pain: "Operations run on Messenger group chats; messages get missed, especially with the dive team.",
-    lanes: ["CRM / PMS", "Calendar", "Equipment Reservation"],
+    lanes: ["CRM / PMS", "Planning", "Equipment Reservation"],
     fix: "Operations become scheduled tasks assigned to the dive team with gear reserved — no lost Messenger threads."
   },
   {
@@ -526,7 +526,7 @@ const PAINPOINTS = [
   {
     id: "pain07", num: "07", title: "Fragmented guest experience",
     pain: "No structured flow from pre-arrival to departure for tailoring dives and meals to each guest.",
-    lanes: ["CRM / PMS", "Calendar", "Folio (PMS)"],
+    lanes: ["CRM / PMS", "Planning", "Folio (PMS)"],
     fix: "A guest profile drives pre-scheduled dives & meals, tracked on the folio from pre-arrival to departure."
   }
 ];
@@ -602,7 +602,7 @@ function overviewView() {
           <ol class="steps">
             <li>A guest browses the <b>Website</b> — rooms, activities, dive trips, packages — and submits a booking enquiry.</li>
             <li>The enquiry flows to <b>CRM/PMS</b>, which opens a Sales Order and reserves the stay.</li>
-            <li><b>CRM/PMS</b> confirms dive-trip slots, boats and instructors against the <b>Calendar</b>, which syncs availability back.</li>
+            <li><b>CRM/PMS</b> confirms dive-trip slots, boats and instructors against <b>Planning</b>, which syncs availability back.</li>
             <li>A liability waiver goes out through <b>Sign</b>; once the guest signs, CRM/PMS and POS are cleared to dive.</li>
             <li><b>CRM/PMS</b> allocates room amenities and diving gear through <b>Equipment Reservation</b>.</li>
             <li><b>Equipment Reservation</b> draws that gear from <b>Inventory</b> (dive gear, F&amp;B supplies, warehouses).</li>
