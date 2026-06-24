@@ -206,6 +206,19 @@
   @media (max-width: 920px) { .flow-grid { grid-template-columns: 1fr; } }
   .flow-caption { font-size: 13px; color: var(--muted); margin: 12px 2px 0; }
 
+  /* ---------- Pain points ---------- */
+  .pain-tag { font-size: 11.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #d8552f; font-variant-numeric: tabular-nums; }
+  .pain-head h3 { font-size: 19px; font-weight: 750; margin: 4px 0 8px; line-height: 1.2; }
+  .pain-quote { font-size: 14px; color: var(--muted); margin: 0 0 14px; padding-left: 14px; border-left: 3px solid #e9a78f; }
+  .pain-lanes { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 6px; }
+  .lane-chip { font-size: 11.5px; font-weight: 600; color: var(--navy-600); background: var(--sand); border: 1px solid var(--line); padding: 4px 11px; border-radius: 8px; }
+  .pain-fix { display: flex; gap: 11px; align-items: flex-start; margin: 16px 0 2px; padding: 13px 15px; background: var(--teal-soft); border: 1px solid var(--teal-line); border-radius: 12px; }
+  .pain-fix .pf-ico { flex: none; font-size: 18px; line-height: 1.3; }
+  .pain-fix .pf-txt { font-size: 13.5px; color: var(--ink); }
+  .pain-fix .pf-txt b { color: var(--teal-dark); font-weight: 700; }
+  .pain-panel { margin-bottom: 30px; }
+  .pain-panel .panel-body { padding: 20px 22px; }
+
   .twocol { display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; align-items: start; }
   .steps { list-style: none; counter-reset: s; margin: 0; padding: 6px 4px; }
   .steps li { counter-increment: s; position: relative; padding: 10px 0 10px 44px; border-bottom: 1px dashed var(--line); font-size: 14.5px; }
@@ -284,6 +297,13 @@
         <span class="nav-txt">
           <span class="nav-title">All modules</span>
           <span class="nav-tagline">Information-flow overview</span>
+        </span>
+      </button>
+      <button class="nav-item" data-route="painpoints">
+        <span class="nav-ico">🎯</span>
+        <span class="nav-txt">
+          <span class="nav-title">Pain points</span>
+          <span class="nav-tagline">Problems → Odoo solutions</span>
         </span>
       </button>
       <div class="nav-label">Modules</div>
@@ -466,6 +486,51 @@ const MODULES = [
   }
 ];
 
+const PAINPOINTS = [
+  {
+    id: "pain01", num: "01", title: "Paper slips & revenue leakage",
+    pain: "Drink and dive charges go on paper slips passed to finance — lost documents, misallocated charges, slow invoicing.",
+    lanes: ["Point of Sale", "Folio (PMS)", "Accounting"],
+    fix: "Charges auto-post from the POS to the guest folio and flow straight into a BIR-compliant invoice — no paper slips, no leakage."
+  },
+  {
+    id: "pain02", num: "02", title: "Human error in charges",
+    pain: "Restaurant orders and rentals get mis-recorded or forgotten when staff are busy.",
+    lanes: ["Point of Sale", "Inventory", "Folio (PMS)"],
+    fix: "Each item is scanned against the catalog and validated, stock auto-deducts, and the charge posts to the folio automatically."
+  },
+  {
+    id: "pain03", num: "03", title: "Slow local POS",
+    pain: "The current POS is slow and needs manual adjustments to get charges through.",
+    lanes: ["Point of Sale", "Inventory", "Folio (PMS)"],
+    fix: "A fast cloud POS adds items in real time with live stock & pricing, pushing the charge straight to the folio."
+  },
+  {
+    id: "pain04", num: "04", title: "Scattered booking channels",
+    pain: "Enquiries arrive on Facebook, WhatsApp, Viber, email and Instagram — managed by hand, hard to translate.",
+    lanes: ["Website", "CRM / PMS", "Calendar"],
+    fix: "Every channel is captured as a lead, centralized in CRM, and scheduled against the calendar in one place."
+  },
+  {
+    id: "pain05", num: "05", title: "Miscommunication",
+    pain: "Operations run on Messenger group chats; messages get missed, especially with the dive team.",
+    lanes: ["CRM / PMS", "Calendar", "Equipment Reservation"],
+    fix: "Operations become scheduled tasks assigned to the dive team with gear reserved — no lost Messenger threads."
+  },
+  {
+    id: "pain06", num: "06", title: "Rental gear disputes",
+    pain: "Guests dispute what gear they took out; there's no clean, signed record to point to.",
+    lanes: ["Equipment Reservation", "Sign", "Inventory"],
+    fix: "Gear checkout is backed by a signed agreement and tracked in inventory, so returns settle against a clear record."
+  },
+  {
+    id: "pain07", num: "07", title: "Fragmented guest experience",
+    pain: "No structured flow from pre-arrival to departure for tailoring dives and meals to each guest.",
+    lanes: ["CRM / PMS", "Calendar", "Folio (PMS)"],
+    fix: "A guest profile drives pre-scheduled dives & meals, tracked on the folio from pre-arrival to departure."
+  }
+];
+
 const byId = Object.fromEntries(MODULES.map(m => [m.id, m]));
 const GUEST = { id: "guest", icon: "🧳", title: "Guest" };
 const main = document.getElementById("main");
@@ -564,6 +629,19 @@ function overviewView() {
         </div>
       </div>
     </section>
+    <section class="section" style="padding-bottom:0">
+      <article class="card" data-route="painpoints" style="cursor:pointer">
+        <div class="card-top">
+          <span class="card-ico">🎯</span>
+          <span>
+            <span class="card-num">7 pain points</span>
+            <div class="card-title">Pain points → Odoo solutions</div>
+          </span>
+        </div>
+        <p class="card-tagline">Where the resort loses time, money and accuracy — each mapped to the Odoo modules that fix it, as a BPMN swimlane.</p>
+        <span class="card-cta">View pain-point swimlanes →</span>
+      </article>
+    </section>
     <section class="section">
       <div class="section-head">
         <h2>Explore by module</h2>
@@ -594,6 +672,55 @@ function overviewView() {
           <span>Casa Escondida · Odoo 19 ERP</span><span>·</span>
           <span>BPMN 2.0 via bpmn-generator (ElkJS layout)</span><span>·</span>
           <span>Information flow v6</span>
+        </div>
+      </div>
+    </footer>
+  </div>`;
+}
+
+function painPointsView() {
+  return `
+  <div class="view">
+    <section class="hero">
+      <div class="hero-inner">
+        <span class="hero-eyebrow">🎯 Pain points · Odoo solutions</span>
+        <h1>Seven pains. <em>Seven swimlanes,</em> solved on Odoo.</h1>
+        <p>From the owners' account of where the business loses time, money and accuracy — each pain point mapped to the Odoo modules that fix it, as a BPMN&nbsp;2.0 swimlane.</p>
+        <div class="hero-stats">
+          <div class="stat"><b>7</b><span>Pain points</span></div>
+          <div class="stat"><b>Swimlanes</b><span>Module-by-module</span></div>
+          <div class="stat"><b>Odoo&nbsp;19</b><span>Live solution</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="section flow-section">
+      ${PAINPOINTS.map(p => `
+        <div class="panel pain-panel">
+          <div class="panel-body pain-head">
+            <span class="pain-tag">Pain ${p.num}</span>
+            <h3>${p.title}</h3>
+            <p class="pain-quote">${p.pain}</p>
+            <div class="pain-lanes">${p.lanes.map(l => `<span class="lane-chip">${l}</span>`).join("")}</div>
+          </div>
+          <div class="flow-viewer">
+            <img src="diagrams/${p.id}.svg" alt="${p.title} — Odoo module swimlane" />
+          </div>
+          <div class="panel-body" style="padding-top:0">
+            <div class="pain-fix">
+              <span class="pf-ico">✅</span>
+              <span class="pf-txt"><b>How Odoo solves it.</b> ${p.fix}</span>
+            </div>
+          </div>
+        </div>`).join("")}
+    </section>
+    <footer class="footer">
+      <div class="footer-cta">
+        <h3>From pain to process</h3>
+        <p>Each swimlane is generated from a Logic-Core model and rendered with the BPMN pipeline — the rows are the Odoo modules that resolve the pain.</p>
+        <div class="footer-meta">
+          <span>Casa Escondida · Odoo 19 ERP</span><span>·</span>
+          <span>BPMN 2.0 via bpmn-generator (ElkJS layout)</span><span>·</span>
+          <span>7 pain-point swimlanes</span>
         </div>
       </div>
     </footer>
@@ -695,9 +822,10 @@ function bindZoom() {
 /* ---------- Router ---------- */
 function render() {
   let route = (location.hash.replace(/^#\/?/, "") || "overview");
-  if (route !== "overview" && !byId[route]) route = "overview";
+  if (route !== "overview" && route !== "painpoints" && !byId[route]) route = "overview";
   zoom = 1;
   if (route === "overview") { main.innerHTML = overviewView(); }
+  else if (route === "painpoints") { main.innerHTML = painPointsView(); }
   else { main.innerHTML = moduleView(byId[route]); bindZoom(); }
   setActiveNav(route);
   window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
