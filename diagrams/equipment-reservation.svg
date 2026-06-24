@@ -32,17 +32,17 @@
   </marker>
 </defs>
 <rect width="1132" height="223" fill="#fafafa"/>
-<path d="M 86 103 L 166 103" stroke="#000000" stroke-width="1.5" fill="none"  marker-end="url(#seq-end)"/>
-<path d="M 266 103 L 346.5 103" stroke="#000000" stroke-width="1.5" fill="none"  marker-end="url(#seq-end)"/>
-<path d="M 383.5 90 L 556 90" stroke="#000000" stroke-width="1.5" fill="none" marker-start="url(#seq-conditional-src)" marker-end="url(#seq-end)"/>
+<path d="M 86 102.5 L 166 102.5" stroke="#000000" stroke-width="1.5" fill="none"  marker-end="url(#seq-end)"/>
+<path d="M 266 103 L 346 103" stroke="#000000" stroke-width="1.5" fill="none"  marker-end="url(#seq-end)"/>
+<path d="M 396 102.5 L 476 102.5 L 476 90 L 556 90" stroke="#000000" stroke-width="1.5" fill="none" marker-start="url(#seq-conditional-src)" marker-end="url(#seq-end)"/>
 <rect x="459.3" y="77" width="21" height="16" rx="2" fill="white" fill-opacity="0.9"/>
 <text x="469.8" y="89" text-anchor="middle" font-size="10" fill="#000000">No</text>
-<path d="M 656 90 L 748.5 90" stroke="#000000" stroke-width="1.5" fill="none"  marker-end="url(#seq-end)"/>
+<path d="M 656 90 L 736 90" stroke="#000000" stroke-width="1.5" fill="none"  marker-end="url(#seq-end)"/>
 <path d="M 383.5 115 L 526 115 L 526 140 L 686 140 L 686 115 L 748.5 115" stroke="#000000" stroke-width="1.5" fill="none" marker-start="url(#seq-default-src)" marker-end="url(#seq-end)"/>
 <rect x="441.1" y="102" width="27.5" height="16" rx="2" fill="white" fill-opacity="0.9"/>
 <text x="454.8" y="114" text-anchor="middle" font-size="10" fill="#000000">Yes</text>
-<path d="M 785.5 103 L 866 103" stroke="#000000" stroke-width="1.5" fill="none"  marker-end="url(#seq-end)"/>
-<path d="M 966 103 L 1046 103" stroke="#000000" stroke-width="1.5" fill="none"  marker-end="url(#seq-end)"/>
+<path d="M 786 102.5 L 866 103" stroke="#000000" stroke-width="1.5" fill="none"  marker-end="url(#seq-end)"/>
+<path d="M 966 102.5 L 1046 102.5" stroke="#000000" stroke-width="1.5" fill="none"  marker-end="url(#seq-end)"/>
 <circle cx="68" cy="102.5" r="18" fill="#ffffff" fill-opacity="0.95" stroke="#000000" stroke-width="2"/>
 <rect x="61" y="97.5" width="14" height="10" fill="#ffffff" stroke="#000000" stroke-width="1.5"/><path d="M 61,97.5 L 68,103.5 L 75,97.5" fill="none" stroke="#000000" stroke-width="1.5"/>
 <text x="68" y="140.5" text-anchor="middle" font-size="11" fill="#000000">Reservation</text>
