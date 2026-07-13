@@ -306,6 +306,13 @@
           <span class="nav-tagline">Problems → Odoo solutions</span>
         </span>
       </button>
+      <a class="nav-item" href="booking-acquisition.html">
+        <span class="nav-ico">🎬</span>
+        <span class="nav-txt">
+          <span class="nav-title">Booking Acquisition</span>
+          <span class="nav-tagline">Animated walkthrough</span>
+        </span>
+      </a>
       <div class="nav-label">Modules</div>
       <div id="navList"></div>
     </aside>
@@ -630,17 +637,30 @@ function overviewView() {
       </div>
     </section>
     <section class="section" style="padding-bottom:0">
-      <article class="card" data-route="painpoints" style="cursor:pointer">
-        <div class="card-top">
-          <span class="card-ico">🎯</span>
-          <span>
-            <span class="card-num">7 pain points</span>
-            <div class="card-title">Pain points → Odoo solutions</div>
-          </span>
-        </div>
-        <p class="card-tagline">Where the resort loses time, money and accuracy — each mapped to the Odoo modules that fix it, as a BPMN swimlane.</p>
-        <span class="card-cta">View pain-point swimlanes →</span>
-      </article>
+      <div class="grid">
+        <article class="card" data-route="painpoints" style="cursor:pointer">
+          <div class="card-top">
+            <span class="card-ico">🎯</span>
+            <span>
+              <span class="card-num">7 pain points</span>
+              <div class="card-title">Pain points → Odoo solutions</div>
+            </span>
+          </div>
+          <p class="card-tagline">Where the resort loses time, money and accuracy — each mapped to the Odoo modules that fix it, as a BPMN swimlane.</p>
+          <span class="card-cta">View pain-point swimlanes →</span>
+        </article>
+        <article class="card" onclick="location.href='booking-acquisition.html'" style="cursor:pointer">
+          <div class="card-top">
+            <span class="card-ico">🎬</span>
+            <span>
+              <span class="card-num">Animated case</span>
+              <div class="card-title">Booking Acquisition</div>
+            </span>
+          </div>
+          <p class="card-tagline">Website form, chatbot and OTA bookings converging on Odoo PMS — animated walkthrough plus a Channel Manager explainer.</p>
+          <span class="card-cta">View animated walkthrough →</span>
+        </article>
+      </div>
     </section>
     <section class="section">
       <div class="section-head">

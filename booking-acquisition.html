@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Booking Acquisition — Casa Escondida Workflows</title>
+<meta name="description" content="How every booking channel — website form, chatbot, and OTAs — ends as a confirmed booking in Odoo PMS, plus a Channel Manager explainer." />
+<style>
+  :root {
+    --navy-900: #08182b;
+    --teal: #4dc2e8;
+    --teal-dark: #2e9fc4;
+    --teal-soft: rgba(77, 194, 232, 0.12);
+    --teal-line: rgba(77, 194, 232, 0.32);
+    --bg: #f5f8fb;
+    --card: #ffffff;
+    --ink: #0d2233;
+    --muted: #5d7488;
+    --muted-2: #6a8096;
+    --line: #e2eaf1;
+    --shadow-sm: 0 1px 2px rgba(13, 34, 51, 0.06), 0 2px 8px rgba(13, 34, 51, 0.05);
+    --shadow-md: 0 6px 24px rgba(13, 34, 51, 0.10);
+    --radius: 16px;
+    --header-h: 64px;
+    --blue: #1565c0;
+    --orange: #f0823c;
+    --green: #389e65;
+    --purple: #7e57c2;
+    --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); -webkit-font-smoothing: antialiased; line-height: 1.55; }
+  a { color: inherit; text-decoration: none; }
+  ::selection { background: var(--teal); color: #fff; }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 50; height: var(--header-h);
+    display: flex; align-items: center; gap: 14px; padding: 0 22px;
+    background: rgba(8, 24, 43, 0.86);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255,255,255,0.08); color: #eaf6fc;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-mark {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
+    display: grid; place-items: center; box-shadow: 0 4px 14px rgba(77,194,232,0.45); flex: none;
+  }
+  .brand-mark svg { width: 20px; height: 20px; display: block; }
+  .brand-name { font-weight: 700; letter-spacing: 0.2px; font-size: 15px; line-height: 1.1; }
+  .brand-sub { font-size: 11px; color: #8fb6cb; letter-spacing: 0.6px; text-transform: uppercase; }
+  .topbar-spacer { flex: 1; }
+  .topbar-tag { font-size: 12px; color: #bfe2f0; padding: 6px 12px; border: 1px solid var(--teal-line); border-radius: 999px; background: rgba(77,194,232,0.08); white-space: nowrap; }
+  .back-link { font-size: 13px; font-weight: 600; color: #bfe2f0; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.16); transition: background .15s; }
+  .back-link:hover { background: rgba(255,255,255,0.08); }
+
+  .hero {
+    position: relative; overflow: hidden; color: #eaf6fc;
+    background: radial-gradient(1200px 480px at 78% -10%, rgba(77,194,232,0.34), transparent 60%),
+                linear-gradient(160deg, #0a1d33 0%, #0d2740 48%, #103450 100%);
+    padding: 64px 48px 120px;
+  }
+  .hero::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 90px;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 90' preserveAspectRatio='none'><path d='M0 60 C 240 10 480 90 720 60 C 960 30 1200 80 1440 50 L1440 90 L0 90 Z' fill='%23f5f8fb'/></svg>") no-repeat;
+    background-size: cover;
+  }
+  .hero-inner { position: relative; max-width: 920px; margin: 0 auto; }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; letter-spacing: 1px; text-transform: uppercase; color: #9fd6ea; border: 1px solid var(--teal-line); padding: 6px 14px; border-radius: 999px; background: rgba(77,194,232,0.08); }
+  .hero h1 { font-size: clamp(30px, 4.4vw, 50px); line-height: 1.06; margin: 20px 0 14px; font-weight: 800; letter-spacing: -0.5px; }
+  .hero h1 em { font-style: normal; color: var(--teal); }
+  .hero p { font-size: clamp(15px, 1.6vw, 19px); color: #c7dded; max-width: 700px; margin: 0 0 28px; }
+  .hero-stats { display: flex; flex-wrap: wrap; gap: 12px; }
+  .stat { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 12px 18px; backdrop-filter: blur(6px); }
+  .stat b { display: block; font-size: 22px; font-weight: 800; color: #fff; }
+  .stat span { font-size: 12.5px; color: #9fb9cc; }
+
+  .section { padding: 0 48px 56px; max-width: 1240px; margin: 0 auto; }
+  .section.pull { margin-top: -70px; position: relative; z-index: 2; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 20px; flex-wrap: wrap; gap: 6px; }
+  .section-head h2 { font-size: 22px; font-weight: 750; margin: 0; }
+  .section-head .hint { font-size: 13px; color: var(--muted); }
+
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); margin-bottom: 24px; overflow: hidden; }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--line); flex-wrap: wrap; gap: 8px; }
+  .panel-head h3 { font-size: 15px; margin: 0; font-weight: 700; display: flex; align-items: center; gap: 9px; }
+  .panel-head h3 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 4px var(--teal-soft); }
+  .tool-btn { border: 1px solid var(--line); background: #fff; cursor: pointer; color: var(--teal-dark); border-radius: 8px; padding: 6px 12px; font-size: 12.5px; font-weight: 600; font-family: var(--font); display: inline-flex; align-items: center; gap: 6px; transition: background .14s, border-color .14s; }
+  .tool-btn:hover { background: var(--bg); border-color: var(--teal-line); }
+  .flow-viewer { background: linear-gradient(0deg, #fbfdfe, #fff); padding: 16px; overflow: auto; }
+  .flow-viewer img { display: block; width: 100%; min-width: 720px; height: auto; border-radius: 8px; }
+  .flow-viewer.gif img { min-width: 640px; }
+  .flow-caption { font-size: 13px; color: var(--muted); margin: 0; padding: 12px 20px 16px; }
+
+  .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 18px; }
+  .jcard { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+  .jcard-head { display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--line); }
+  .jcard-num { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; font-weight: 800; font-size: 15px; color: #fff; flex: none; }
+  .jcard-head h3 { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.2; }
+  .jcard-head .sub { font-size: 12px; color: var(--muted); }
+  .jsteps { list-style: none; counter-reset: s; margin: 0; padding: 10px 18px 16px; }
+  .jsteps li { counter-increment: s; position: relative; padding: 8px 0 8px 38px; border-bottom: 1px dashed var(--line); font-size: 13.5px; }
+  .jsteps li:last-child { border-bottom: none; }
+  .jsteps li::before { content: counter(s); position: absolute; left: 0; top: 7px; width: 24px; height: 24px; border-radius: 7px; background: var(--teal-soft); color: var(--teal-dark); border: 1px solid var(--teal-line); display: grid; place-items: center; font-size: 11.5px; font-weight: 700; }
+  .jcard .outcome { margin: 0 18px 18px; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; background: var(--teal-soft); border: 1px solid var(--teal-line); color: var(--teal-dark); }
+
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(430px, 100%), 1fr)); gap: 18px; }
+  .cm-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+  .cm-card-head { padding: 13px 20px; color: #fff; font-weight: 700; font-size: 15.5px; }
+  .cm-card ul { list-style: none; margin: 0; padding: 14px 20px 18px; }
+  .cm-card li { position: relative; padding: 7px 0 7px 22px; font-size: 14px; }
+  .cm-card li::before { content: ""; position: absolute; left: 2px; top: 14px; width: 8px; height: 8px; border-radius: 50%; }
+  .cm-card.blue .cm-card-head { background: var(--blue); } .cm-card.blue li::before { background: var(--blue); }
+  .cm-card.orange .cm-card-head { background: var(--orange); } .cm-card.orange li::before { background: var(--orange); }
+  .cm-card.green .cm-card-head { background: var(--green); } .cm-card.green li::before { background: var(--green); }
+  .cm-card.purple .cm-card-head { background: var(--purple); } .cm-card.purple li::before { background: var(--purple); }
+
+  .footer { background: linear-gradient(160deg, #0a1d33, #0d2740); color: #c7dded; padding: 46px 48px; }
+  .footer-cta { max-width: 1240px; margin: 0 auto; }
+  .footer-cta h3 { color: #fff; font-size: 22px; margin: 0 0 8px; }
+  .footer-cta p { margin: 0 0 4px; font-size: 14px; }
+  .footer-meta { margin-top: 26px; font-size: 12.5px; color: #7d9bb0; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px; display: flex; flex-wrap: wrap; gap: 8px 18px; }
+
+  @media (max-width: 900px) {
+    .hero, .section, .footer { padding-left: 22px; padding-right: 22px; }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 17c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2M2 12c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span>
+        <span class="brand-name">Casa Escondida</span><br/>
+        <span class="brand-sub">Module Workflows</span>
+      </span>
+    </a>
+    <span class="topbar-spacer"></span>
+    <a class="back-link" href="index.html">← All workflows</a>
+    <span class="topbar-tag">Odoo 19 · BPMN 2.0</span>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="hero-eyebrow">🎬 Workflow · Booking Acquisition</span>
+      <h1>Three channels. <em>One destination:</em> Odoo PMS.</h1>
+      <p>Website form, AI chatbot, and OTAs like Booking.com &amp; Trip.com — every inquiry and booking, whatever the channel, ends as one confirmed booking with a folio in Odoo PMS.</p>
+      <div class="hero-stats">
+        <div class="stat"><b>3</b><span>Booking channels</span></div>
+        <div class="stat"><b>5</b><span>Swimlanes</span></div>
+        <div class="stat"><b>1</b><span>Confirmed booking in Odoo</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section pull">
+    <div class="panel">
+      <div class="panel-head">
+        <h3><span class="dot"></span>Animated walkthrough</h3>
+        <a class="tool-btn" href="diagrams/booking-acquisition-v6.gif" target="_blank" rel="noopener">Open full ↗</a>
+      </div>
+      <div class="flow-viewer gif">
+        <img src="diagrams/booking-acquisition-v6.gif" alt="Animated Booking Acquisition workflow — three journeys plus a Channel Manager explainer" />
+      </div>
+      <p class="flow-caption">Chapters 1–3 trace each booking journey through the swimlanes; chapter 4 spotlights the Channel Manager lane and explains what it does, what it costs, and when it pays off.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>The three journeys</h2>
+      <span class="hint">Each chapter of the animation, step by step</span>
+    </div>
+    <div class="grid3">
+      <div class="jcard">
+        <div class="jcard-head">
+          <span class="jcard-num" style="background:var(--green)">1</span>
+          <div><h3>Website form</h3><span class="sub">Guest / Agent inquires</span></div>
+        </div>
+        <ol class="jsteps">
+          <li>Guest or agent submits the website booking form.</li>
+          <li>A lead is created in Odoo PMS.</li>
+          <li>A quotation is prepared automatically from the pricelist.</li>
+          <li>The quotation is sent; the guest reviews and confirms.</li>
+          <li>The sales order is confirmed.</li>
+        </ol>
+        <div class="outcome">→ Folio &amp; guest tasks opened · booking confirmed</div>
+      </div>
+      <div class="jcard">
+        <div class="jcard-head">
+          <span class="jcard-num" style="background:var(--blue)">2</span>
+          <div><h3>Chatbot</h3><span class="sub">Guest / Agent inquires</span></div>
+        </div>
+        <ol class="jsteps">
+          <li>Guest or agent chats with the AI assistant.</li>
+          <li>The chatbot collects booking details (dates, rooms, dives).</li>
+          <li>It pulls live prices from the Odoo pricelist.</li>
+          <li>If the guest is ready to book, the details flow into Odoo as a quotation; if not, the conversation ends as a lead to nurture.</li>
+          <li>Guest confirms → sales order confirmed.</li>
+        </ol>
+        <div class="outcome">→ Folio &amp; guest tasks opened · booking confirmed</div>
+      </div>
+      <div class="jcard">
+        <div class="jcard-head">
+          <span class="jcard-num" style="background:var(--orange)">3</span>
+          <div><h3>OTA direct</h3><span class="sub">Guest / Agent books</span></div>
+        </div>
+        <ol class="jsteps">
+          <li>Guest books directly on Booking.com / Trip.com.</li>
+          <li>The OTA confirms the booking and takes payment.</li>
+          <li>The Channel Manager maps the room &amp; rate plan.</li>
+          <li>Availability is synced back to every OTA — the night closes everywhere.</li>
+          <li>A confirmed sales order is created in Odoo automatically.</li>
+        </ol>
+        <div class="outcome">→ Folio &amp; guest tasks opened · booking confirmed</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Channel Manager 101</h2>
+      <span class="hint">Chapter 4 of the animation — the middle swimlane, explained</span>
+    </div>
+    <div class="grid2">
+      <div class="cm-card blue">
+        <div class="cm-card-head">What is a Channel Manager?</div>
+        <ul>
+          <li>One calendar connecting Odoo PMS to every OTA.</li>
+          <li>Pushes rates &amp; availability to Booking.com / Trip.com.</li>
+          <li>Pulls confirmed OTA bookings back automatically.</li>
+          <li>Stops double bookings between OTAs &amp; direct sales.</li>
+        </ul>
+      </div>
+      <div class="cm-card orange">
+        <div class="cm-card-head">Does Casa need one? Who &amp; cost</div>
+        <ul>
+          <li>Worth it once rooms sell on 2+ channels at the same time.</li>
+          <li>Odoo-friendly picks: WuBook, Beds24, SiteMinder, Cloudbeds.</li>
+          <li>Indicative cost: ~USD 20–150 / month (rooms × channels).</li>
+          <li>Without one: staff updates each OTA extranet by hand.</li>
+        </ul>
+      </div>
+      <div class="cm-card green">
+        <div class="cm-card-head">What does “Sync availability to OTAs” mean?</div>
+        <ul>
+          <li>A night sold anywhere closes everywhere within minutes.</li>
+          <li>Rates, stops &amp; restrictions stay aligned on all OTAs.</li>
+          <li>Small inventory = highest overbooking risk → yes, needed.</li>
+          <li>Manual updates only work with very few bookings.</li>
+        </ul>
+      </div>
+      <div class="cm-card purple">
+        <div class="cm-card-head">Bottom line for Casa</div>
+        <ul>
+          <li>The Booking.com share of total bookings is the key number.</li>
+          <li>High share + manual re-typing today = it pays for itself.</li>
+          <li>Low share + few bookings = manual updates are fine for now.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>The full BPMN diagram</h2>
+      <span class="hint">Five swimlanes — Guest, OTAs, Channel Manager, Chatbot, Odoo PMS</span>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <h3><span class="dot"></span>Booking Acquisition · BPMN 2.0</h3>
+        <a class="tool-btn" href="diagrams/booking-acquisition.svg" target="_blank" rel="noopener">Open full ↗</a>
+      </div>
+      <div class="flow-viewer">
+        <img src="diagrams/booking-acquisition.svg" alt="Booking Acquisition BPMN 2.0 swimlane diagram" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Bonus: the booking machine</h2>
+      <span class="hint">The same story as a flat-vector process machine</span>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <h3><span class="dot"></span>Illustrated animation</h3>
+        <a class="tool-btn" href="diagrams/booking-machine.gif" target="_blank" rel="noopener">Open full ↗</a>
+      </div>
+      <div class="flow-viewer gif" style="text-align:center">
+        <img src="diagrams/booking-machine.gif" alt="Illustrated booking machine animation — chatbot, channel manager, quotation and Odoo tower" style="max-width:820px;min-width:auto;margin:0 auto" />
+      </div>
+      <p class="flow-caption">An inquiry rolls from the chatbot bucket, through the Channel Manager pipe, past the quotation, and strikes the Odoo tower — folio out, booking confirmed.</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-cta">
+      <h3>From inquiry to folio</h3>
+      <p>Whatever the channel, the workflow converges on one confirmed sales order and one guest folio inside Odoo PMS.</p>
+      <div class="footer-meta">
+        <span>Casa Escondida · Odoo 19 ERP</span><span>·</span>
+        <span>BPMN 2.0 · Booking Acquisition v6</span><span>·</span>
+        <span><a href="index.html" style="color:#9fd6ea">← Back to all workflows</a></span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
