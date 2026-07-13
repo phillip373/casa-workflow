@@ -105,17 +105,6 @@
   .jsteps li::before { content: counter(s); position: absolute; left: 0; top: 7px; width: 24px; height: 24px; border-radius: 7px; background: var(--teal-soft); color: var(--teal-dark); border: 1px solid var(--teal-line); display: grid; place-items: center; font-size: 11.5px; font-weight: 700; }
   .jcard .outcome { margin: 0 18px 18px; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; background: var(--teal-soft); border: 1px solid var(--teal-line); color: var(--teal-dark); }
 
-  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(430px, 100%), 1fr)); gap: 18px; }
-  .cm-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
-  .cm-card-head { padding: 13px 20px; color: #fff; font-weight: 700; font-size: 15.5px; }
-  .cm-card ul { list-style: none; margin: 0; padding: 14px 20px 18px; }
-  .cm-card li { position: relative; padding: 7px 0 7px 22px; font-size: 14px; }
-  .cm-card li::before { content: ""; position: absolute; left: 2px; top: 14px; width: 8px; height: 8px; border-radius: 50%; }
-  .cm-card.blue .cm-card-head { background: var(--blue); } .cm-card.blue li::before { background: var(--blue); }
-  .cm-card.orange .cm-card-head { background: var(--orange); } .cm-card.orange li::before { background: var(--orange); }
-  .cm-card.green .cm-card-head { background: var(--green); } .cm-card.green li::before { background: var(--green); }
-  .cm-card.purple .cm-card-head { background: var(--purple); } .cm-card.purple li::before { background: var(--purple); }
-
   .footer { background: linear-gradient(160deg, #0a1d33, #0d2740); color: #c7dded; padding: 46px 48px; }
   .footer-cta { max-width: 1240px; margin: 0 auto; }
   .footer-cta h3 { color: #fff; font-size: 22px; margin: 0 0 8px; }
@@ -284,43 +273,6 @@
         </svg>
       </div>
       <p class="flow-caption">The Channel Manager sits between Odoo PMS and the OTAs: rates and availability flow out to every channel, confirmed OTA bookings flow back in as sales orders — so the calendar is always one single source of truth.</p>
-    </div>
-    <div class="grid2">
-      <div class="cm-card blue">
-        <div class="cm-card-head">What it does</div>
-        <ul>
-          <li>One calendar connecting Odoo PMS to every OTA.</li>
-          <li>Pushes rates &amp; availability to Booking.com / Trip.com.</li>
-          <li>Pulls confirmed OTA bookings back automatically.</li>
-          <li>Stops double bookings between OTAs &amp; direct sales.</li>
-        </ul>
-      </div>
-      <div class="cm-card orange">
-        <div class="cm-card-head">Does Casa need one? Who &amp; cost</div>
-        <ul>
-          <li>Worth it once rooms sell on 2+ channels at the same time.</li>
-          <li>Odoo-friendly picks: WuBook, Beds24, SiteMinder, Cloudbeds.</li>
-          <li>Indicative cost: ~USD 20–150 / month (rooms × channels).</li>
-          <li>Without one: staff updates each OTA extranet by hand.</li>
-        </ul>
-      </div>
-      <div class="cm-card green">
-        <div class="cm-card-head">What does “Sync availability to OTAs” mean?</div>
-        <ul>
-          <li>A night sold anywhere closes everywhere within minutes.</li>
-          <li>Rates, stops &amp; restrictions stay aligned on all OTAs.</li>
-          <li>Small inventory = highest overbooking risk → yes, needed.</li>
-          <li>Manual updates only work with very few bookings.</li>
-        </ul>
-      </div>
-      <div class="cm-card purple">
-        <div class="cm-card-head">Bottom line for Casa</div>
-        <ul>
-          <li>The Booking.com share of total bookings is the key number.</li>
-          <li>High share + manual re-typing today = it pays for itself.</li>
-          <li>Low share + few bookings = manual updates are fine for now.</li>
-        </ul>
-      </div>
     </div>
   </section>
 
