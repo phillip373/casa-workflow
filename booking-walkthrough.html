@@ -338,7 +338,7 @@ const N={
   cmSync:{x:690,y:348,w:120,h:52,type:'task',label:'Sync availability to OTAs',j:['ota']},
   botCollect:{x:359,y:458,w:118,h:50,type:'task',label:'Collect booking details',j:['bot']},
   botPrice:{x:485,y:458,w:104,h:50,type:'task',label:'Pull prices from pricelist',j:['bot']},
-  gwReadyB:{x:570,y:458,type:'gw',label:'Ready to book?',j:['bot']},
+  gwReadyB:{x:570,y:458,type:'gw',label:'Ready to book?',lyo:-36,j:['bot']},
   endInq:{x:680,y:458,type:'ev',label:'Inquiry closed',end:true,j:[]},
   draftQ:{x:650,y:558,w:100,h:52,type:'task',label:'Create draft quotation',j:['web','bot']},
   sendQ:{x:790,y:558,w:118,h:52,type:'task',label:'Send quotation to guest',j:['web','bot']},
@@ -371,7 +371,7 @@ const EDGES=[
   ['M690,374 V634 H846',['ota']],
   ['M954,634 H1110 V575',['ota']],
 ];
-const FLABELS=[['Website form',270,156,10],['Books on OTA',250,228],['Chat message',258,420],['Yes',548,215],['Yes',580,495],['Not yet',596,449]];
+const FLABELS=[['Website form',270,156,10],['Books on OTA',238,228,0,'end'],['Chat message',258,420],['Yes',548,215],['Yes',580,495],['Not yet',596,449]];
 
 const tail=who=>[
   {node:'draftQ',dot:[600,532],title:'Create draft quotation',lane:'Odoo PMS (Sales)',
@@ -702,7 +702,7 @@ function build(){
   });
   lanesG.appendChild(svgEl('rect',{class:'lane',x:LANE_X,y:88,width:LANE_W,height:600}));
   EDGES.forEach(([d])=>{const p=svgEl('path',{class:'edge dim',d});edgeEls.push(p);edgesG.appendChild(p);});
-  FLABELS.forEach(f=>{const a={class:'flabel',x:f[1],y:f[2]};if(f[3])a['font-size']=f[3];edgesG.appendChild(svgEl('text',a,f[0]));});
+  FLABELS.forEach(f=>{const a={class:'flabel',x:f[1],y:f[2]};if(f[3])a['font-size']=f[3];if(f[4])a['text-anchor']=f[4];edgesG.appendChild(svgEl('text',a,f[0]));});
   for(const id in N){const n=N[id];const g=svgEl('g',{id:'nd-'+id,class:'dim'});
     if(n.type==='task'){
       g.appendChild(svgEl('rect',{class:'task',x:n.x-n.w/2,y:n.y-n.h/2,width:n.w,height:n.h,rx:8}));
@@ -713,7 +713,7 @@ function build(){
       g.appendChild(svgEl('path',{class:'gw',d:`M${n.x},${n.y-s} L${n.x+s},${n.y} L${n.x},${n.y+s} L${n.x-s},${n.y} Z`}));
       g.appendChild(svgEl('path',{class:'gw',d:`M${n.x-6},${n.y-6} L${n.x+6},${n.y+6}M${n.x+6},${n.y-6} L${n.x-6},${n.y+6}`,fill:'none'}));
       const lines=wrap(n.label,3);
-      const ly=lines.length>1?n.y-33:n.y-22;
+      const ly=n.lyo?n.y+n.lyo:(lines.length>1?n.y-33:n.y-22);
       lines.forEach((ln,i)=>g.appendChild(svgEl('text',{class:'nlabel',x:n.x,y:ly+i*13},ln)));
     }else{
       g.appendChild(svgEl('circle',{class:'ev'+(n.end?' end':''),cx:n.x,cy:n.y,r:n.end?15:16}));
