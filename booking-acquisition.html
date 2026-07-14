@@ -77,7 +77,7 @@
   .stat span { font-size: 12.5px; color: #9fb9cc; }
 
   .section { padding: 0 48px 56px; max-width: 1240px; margin: 0 auto; }
-  .section.pull { margin-top: -70px; position: relative; z-index: 2; max-width: 1680px; }
+  .section.pull { margin-top: -70px; position: relative; z-index: 2; max-width: none; }
   .section-head { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 20px; flex-wrap: wrap; gap: 6px; }
   .section-head h2 { font-size: 22px; font-weight: 750; margin: 0; }
   .section-head .hint { font-size: 13px; color: var(--muted); }
@@ -99,8 +99,8 @@
   .jbtn.active[data-j="web"] { background: var(--green); border-color: var(--green); color: #fff; }
   .jbtn.active[data-j="bot"] { background: var(--blue); border-color: var(--blue); color: #fff; }
   .ia-hint { font-size: 13px; color: var(--muted); margin: 0; padding: 12px 20px 0; }
-  .ia-outer { background: linear-gradient(0deg, #fbfdfe, #fff); padding: 16px; overflow-x: auto; }
-  .ia-wrap { position: relative; min-width: 1780px; --jc: var(--green); }
+  .ia-outer { background: linear-gradient(0deg, #fbfdfe, #fff); padding: 16px; }
+  .ia-wrap { position: relative; --jc: var(--green); }
   .ia-wrap svg { display: block; width: 100%; height: auto; }
   .ia-wrap svg text { font-size: 14px !important; }
   .ia-wrap .djs-element { transition: opacity .35s; }
@@ -191,7 +191,7 @@
           <a class="tool-btn" href="diagrams/booking-acquisition-v5.gif" target="_blank" rel="noopener">Watch as GIF ↗</a>
         </div>
       </div>
-      <p class="ia-hint">Pick a journey, then <b>hover the numbered steps</b> on the diagram — each one opens a board with a short live demo of that moment. Scroll the diagram sideways if it doesn't all fit.</p>
+      <p class="ia-hint">Pick a journey, then <b>hover the numbered steps</b> on the diagram — each one opens a board with a short live demo of that moment.</p>
       <div class="ia-outer">
         <div class="ia-wrap" id="iaWrap"></div>
       </div>
@@ -488,12 +488,12 @@
       (step.txt ? '<p class="txt">' + step.txt + '</p>' : '') +
       '<p class="cap">' + step.cap + '</p>';
     // position: below dots in the upper half of the diagram, above otherwise
-    // clamp horizontally to the visible (scrolled) part of the diagram
-    const outer = wrap.parentElement;
-    let left = dot.offsetLeft - 320;
-    left = Math.min(left, outer.scrollLeft + outer.clientWidth - 672);
-    left = Math.max(left, Math.max(8, outer.scrollLeft - 8));
-    left = Math.min(left, wrap.clientWidth - 648);
+    // size the board to the diagram, keep it fully inside
+    const popW = Math.round(Math.min(640, Math.max(360, wrap.clientWidth * 0.42)));
+    pop.style.width = popW + 'px';
+    let left = dot.offsetLeft - popW / 2;
+    left = Math.min(left, wrap.clientWidth - popW - 8);
+    left = Math.max(left, 8);
     pop.style.left = left + 'px';
     pop.classList.add('show');
     pop.style.visibility = 'hidden';
