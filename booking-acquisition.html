@@ -77,7 +77,7 @@
   .stat span { font-size: 12.5px; color: #9fb9cc; }
 
   .section { padding: 0 48px 56px; max-width: 1240px; margin: 0 auto; }
-  .section.pull { margin-top: -70px; position: relative; z-index: 2; }
+  .section.pull { margin-top: -70px; position: relative; z-index: 2; max-width: 1680px; }
   .section-head { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 20px; flex-wrap: wrap; gap: 6px; }
   .section-head h2 { font-size: 22px; font-weight: 750; margin: 0; }
   .section-head .hint { font-size: 13px; color: var(--muted); }
@@ -100,8 +100,9 @@
   .jbtn.active[data-j="bot"] { background: var(--blue); border-color: var(--blue); color: #fff; }
   .ia-hint { font-size: 13px; color: var(--muted); margin: 0; padding: 12px 20px 0; }
   .ia-outer { background: linear-gradient(0deg, #fbfdfe, #fff); padding: 16px; overflow-x: auto; }
-  .ia-wrap { position: relative; min-width: 1080px; --jc: var(--green); }
+  .ia-wrap { position: relative; min-width: 1780px; --jc: var(--green); }
   .ia-wrap svg { display: block; width: 100%; height: auto; }
+  .ia-wrap svg text { font-size: 14px !important; }
   .ia-wrap .djs-element { transition: opacity .35s; }
   .ia-dim { opacity: .13; }
   .ia-hl path { stroke: var(--jc) !important; stroke-width: 2.4px !important; }
@@ -116,17 +117,17 @@
   .ia-dot::after { content: ""; position: absolute; inset: -7px; border-radius: 50%; border: 2px solid var(--jc); opacity: .45; animation: iaPulse 1.8s ease-out infinite; }
   @keyframes iaPulse { 0% { transform: scale(.7); opacity: .5; } 80% { transform: scale(1.25); opacity: 0; } 100% { opacity: 0; } }
   .ia-pop {
-    position: absolute; z-index: 20; width: 340px; background: #fff; border-radius: 14px;
+    position: absolute; z-index: 20; width: 640px; background: #fff; border-radius: 14px;
     border: 1px solid var(--line); box-shadow: var(--shadow-md); overflow: hidden;
     opacity: 0; pointer-events: none; transform: translateY(6px); transition: opacity .18s, transform .18s;
   }
   .ia-pop.show { opacity: 1; pointer-events: auto; transform: none; }
-  .ia-pop-head { display: flex; align-items: center; gap: 9px; padding: 10px 14px; background: var(--jc); color: #fff; }
-  .ia-pop-head .n { width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,.22); display: grid; place-items: center; font-size: 12px; font-weight: 800; flex: none; }
-  .ia-pop-head b { font-size: 13.5px; line-height: 1.25; }
+  .ia-pop-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--jc); color: #fff; }
+  .ia-pop-head .n { width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,.22); display: grid; place-items: center; font-size: 13px; font-weight: 800; flex: none; }
+  .ia-pop-head b { font-size: 15px; line-height: 1.25; }
   .ia-pop video, .ia-pop img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; background: #0d2740; }
-  .ia-pop .cap { font-size: 12.5px; color: var(--muted); margin: 0; padding: 10px 14px 12px; line-height: 1.5; }
-  .ia-pop .txt { font-size: 13px; color: var(--ink); margin: 0; padding: 12px 14px 4px; line-height: 1.6; }
+  .ia-pop .cap { font-size: 13.5px; color: var(--muted); margin: 0; padding: 11px 16px 13px; line-height: 1.5; }
+  .ia-pop .txt { font-size: 14.5px; color: var(--ink); margin: 0; padding: 13px 16px 4px; line-height: 1.65; }
 
   .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 18px; }
   .jcard { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
@@ -190,7 +191,7 @@
           <a class="tool-btn" href="diagrams/booking-acquisition-v5.gif" target="_blank" rel="noopener">Watch as GIF ↗</a>
         </div>
       </div>
-      <p class="ia-hint">Pick a journey, then <b>hover the numbered steps</b> on the diagram — each one opens a board with a short live demo of that moment.</p>
+      <p class="ia-hint">Pick a journey, then <b>hover the numbered steps</b> on the diagram — each one opens a board with a short live demo of that moment. Scroll the diagram sideways if it doesn't all fit.</p>
       <div class="ia-outer">
         <div class="ia-wrap" id="iaWrap"></div>
       </div>
@@ -348,7 +349,6 @@
 (function () {
   const wrap = document.getElementById('iaWrap');
   const caption = document.getElementById('iaCaption');
-  const outer = wrap.parentElement;
 
   const SHARED_OD = [
     { at: 'od_quote_auto', t: 'Draft quotation, automatically',
@@ -488,7 +488,12 @@
       (step.txt ? '<p class="txt">' + step.txt + '</p>' : '') +
       '<p class="cap">' + step.cap + '</p>';
     // position: below dots in the upper half of the diagram, above otherwise
-    const left = Math.max(8, Math.min(dot.offsetLeft - 170, wrap.clientWidth - 348));
+    // clamp horizontally to the visible (scrolled) part of the diagram
+    const outer = wrap.parentElement;
+    let left = dot.offsetLeft - 320;
+    left = Math.min(left, outer.scrollLeft + outer.clientWidth - 672);
+    left = Math.max(left, Math.max(8, outer.scrollLeft - 8));
+    left = Math.min(left, wrap.clientWidth - 648);
     pop.style.left = left + 'px';
     pop.classList.add('show');
     pop.style.visibility = 'hidden';
@@ -526,8 +531,6 @@
     clearTimeout(rzT);
     rzT = setTimeout(() => { if (svg) { hidePop(); buildDots(); } }, 150);
   });
-  outer.addEventListener('scroll', hidePop);
-
   fetch('diagrams/booking-acquisition.svg')
     .then(r => r.text())
     .then(txt => {
