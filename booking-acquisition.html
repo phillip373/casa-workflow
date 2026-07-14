@@ -90,8 +90,43 @@
   .tool-btn:hover { background: var(--bg); border-color: var(--teal-line); }
   .flow-viewer { background: linear-gradient(0deg, #fbfdfe, #fff); padding: 16px; overflow: auto; }
   .flow-viewer img { display: block; width: 100%; min-width: 720px; height: auto; border-radius: 8px; }
-  .flow-viewer.gif img { min-width: 640px; }
   .flow-caption { font-size: 13px; color: var(--muted); margin: 0; padding: 12px 20px 16px; }
+
+  /* ── interactive walkthrough ── */
+  .jtoggle { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .jbtn { border: 1px solid var(--line); background: #fff; cursor: pointer; color: var(--muted); border-radius: 999px; padding: 7px 16px; font-family: var(--font); font-size: 13px; font-weight: 700; transition: background .15s, color .15s, border-color .15s; }
+  .jbtn:hover { border-color: var(--teal-line); color: var(--ink); }
+  .jbtn.active[data-j="web"] { background: var(--green); border-color: var(--green); color: #fff; }
+  .jbtn.active[data-j="bot"] { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .ia-hint { font-size: 13px; color: var(--muted); margin: 0; padding: 12px 20px 0; }
+  .ia-outer { background: linear-gradient(0deg, #fbfdfe, #fff); padding: 16px; overflow-x: auto; }
+  .ia-wrap { position: relative; min-width: 1080px; --jc: var(--green); }
+  .ia-wrap svg { display: block; width: 100%; height: auto; }
+  .ia-wrap .djs-element { transition: opacity .35s; }
+  .ia-dim { opacity: .13; }
+  .ia-hl path { stroke: var(--jc) !important; stroke-width: 2.4px !important; }
+  .ia-dot {
+    position: absolute; z-index: 25; width: 26px; height: 26px; margin: -13px 0 0 -13px;
+    border-radius: 50%; background: var(--jc); color: #fff; border: 2px solid #fff;
+    display: grid; place-items: center; font-size: 12.5px; font-weight: 800; font-family: var(--font);
+    box-shadow: 0 2px 8px rgba(13,34,51,.35); cursor: pointer; padding: 0;
+    transition: transform .15s;
+  }
+  .ia-dot:hover, .ia-dot:focus-visible { transform: scale(1.22); outline: none; }
+  .ia-dot::after { content: ""; position: absolute; inset: -7px; border-radius: 50%; border: 2px solid var(--jc); opacity: .45; animation: iaPulse 1.8s ease-out infinite; }
+  @keyframes iaPulse { 0% { transform: scale(.7); opacity: .5; } 80% { transform: scale(1.25); opacity: 0; } 100% { opacity: 0; } }
+  .ia-pop {
+    position: absolute; z-index: 20; width: 340px; background: #fff; border-radius: 14px;
+    border: 1px solid var(--line); box-shadow: var(--shadow-md); overflow: hidden;
+    opacity: 0; pointer-events: none; transform: translateY(6px); transition: opacity .18s, transform .18s;
+  }
+  .ia-pop.show { opacity: 1; pointer-events: auto; transform: none; }
+  .ia-pop-head { display: flex; align-items: center; gap: 9px; padding: 10px 14px; background: var(--jc); color: #fff; }
+  .ia-pop-head .n { width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,.22); display: grid; place-items: center; font-size: 12px; font-weight: 800; flex: none; }
+  .ia-pop-head b { font-size: 13.5px; line-height: 1.25; }
+  .ia-pop video, .ia-pop img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; background: #0d2740; }
+  .ia-pop .cap { font-size: 12.5px; color: var(--muted); margin: 0; padding: 10px 14px 12px; line-height: 1.5; }
+  .ia-pop .txt { font-size: 13px; color: var(--ink); margin: 0; padding: 12px 14px 4px; line-height: 1.6; }
 
   .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 18px; }
   .jcard { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
@@ -148,13 +183,18 @@
   <section class="section pull">
     <div class="panel">
       <div class="panel-head">
-        <h3><span class="dot"></span>Animated walkthrough</h3>
-        <a class="tool-btn" href="diagrams/booking-acquisition-v5.gif" target="_blank" rel="noopener">Open full ↗</a>
+        <h3><span class="dot"></span>Interactive walkthrough</h3>
+        <div class="jtoggle" role="tablist">
+          <button class="jbtn active" data-j="web" role="tab">1 · Website form</button>
+          <button class="jbtn" data-j="bot" role="tab">2 · Chatbot</button>
+          <a class="tool-btn" href="diagrams/booking-acquisition-v5.gif" target="_blank" rel="noopener">Watch as GIF ↗</a>
+        </div>
       </div>
-      <div class="flow-viewer gif">
-        <img src="diagrams/booking-acquisition-v5.gif" alt="Animated Booking Acquisition workflow — website form, chatbot and OTA journeys" />
+      <p class="ia-hint">Pick a journey, then <b>hover the numbered steps</b> on the diagram — each one opens a board with a short live demo of that moment.</p>
+      <div class="ia-outer">
+        <div class="ia-wrap" id="iaWrap"></div>
       </div>
-      <p class="flow-caption">Three journeys, one at a time — website form, chatbot and OTA direct — each traced through the swimlanes until the booking is confirmed in Odoo PMS.</p>
+      <p class="flow-caption" id="iaCaption">Journey 1 — a website booking request becomes a confirmed sales order, folio and guest tasks in Odoo PMS.</p>
     </div>
   </section>
 
@@ -303,5 +343,206 @@
       </div>
     </div>
   </footer>
+
+<script>
+(function () {
+  const wrap = document.getElementById('iaWrap');
+  const caption = document.getElementById('iaCaption');
+  const outer = wrap.parentElement;
+
+  const SHARED_OD = [
+    { at: 'od_quote_auto', t: 'Draft quotation, automatically',
+      video: 'demo-quotation.mp4', poster: 'poster-quotation.png',
+      cap: 'Odoo drafts quotation S00171 from the pricelist — room nights, dive package, VAT. No re-typing.' },
+    { at: 'od_send', t: 'Quotation emailed',
+      img: 'still-quote-sent.png',
+      cap: 'One click — “Send by Email” — and the quote lands in the guest’s inbox.' },
+    { at: 'od_confirm', t: 'Guest reviews & confirms',
+      video: 'demo-email-confirm.mp4', poster: 'poster-email-confirm.png',
+      cap: 'The guest opens the email and clicks “Review & Confirm booking” — the quotation becomes a sales order.' },
+    { at: 'od_folio', t: 'Folio & guest tasks open',
+      img: 'still-folio.png',
+      cap: 'Folio F0087: all charges on one bill, plus the guest checklist — waiver, room, dive trip, gear.' },
+    { at: 'od_end', t: 'Booking confirmed',
+      img: 'still-confirmed.png',
+      cap: 'S00171 is a confirmed sales order — the room night closes on the calendar.' },
+  ];
+
+  const JOURNEYS = {
+    web: {
+      color: '#389e65',
+      caption: 'Journey 1 — a website booking request becomes a confirmed sales order, folio and guest tasks in Odoo PMS.',
+      nodes: ['g_start', 'g_channel', 'Gateway_1qug48l', 'od_quote_auto', 'od_send',
+              'od_wait', 'od_confirm', 'od_final', 'od_folio', 'od_end'],
+      edges: ['flow_g_start_g_channel', 'Flow_1c9g9b8', 'flow_g_channel_od_lead',
+              'flow_od_quote_auto_od_quote_merge', 'flow_od_send_od_wait',
+              'flow_od_wait_od_confirm', 'flow_od_confirm_od_final',
+              'flow_od_final_od_folio', 'flow_od_folio_od_end'],
+      soft: [],
+      steps: [
+        { at: 'g_start', t: 'Guest / agent starts an inquiry',
+          img: 'still-web-page.png',
+          cap: 'The guest lands on Casa Escondida’s website and opens the booking page.' },
+        { at: 'Gateway_1qug48l', t: 'Fills the website form',
+          video: 'demo-web-form.mp4', poster: 'poster-web-form.png',
+          cap: 'Dates, room, guests and dive notes — then “Request booking”.' },
+        ...SHARED_OD,
+      ],
+    },
+    bot: {
+      color: '#1565c0',
+      caption: 'Journey 2 — the chatbot collects details and prices, then hands a ready quotation to Odoo PMS.',
+      nodes: ['g_start', 'g_channel', 'Gateway_1qug48l', 'cb_collect', 'cb_price', 'cb_gw',
+              'od_quote_auto', 'od_send', 'od_wait', 'od_confirm', 'od_final', 'od_folio', 'od_end'],
+      edges: ['flow_g_start_g_channel', 'Flow_1c9g9b8', 'flow_g_channel_cb_collect',
+              'flow_cb_collect_cb_price', 'flow_cb_price_cb_gw', 'flow_cb_gw_od_quote_auto',
+              'flow_od_quote_auto_od_quote_merge', 'flow_od_send_od_wait',
+              'flow_od_wait_od_confirm', 'flow_od_confirm_od_final',
+              'flow_od_final_od_folio', 'flow_od_folio_od_end'],
+      soft: ['flow_cb_gw_cb_end_no', 'cb_end_no'],
+      steps: [
+        { at: 'g_start', t: 'Guest opens the chat assistant',
+          img: 'poster-chatbot.png',
+          cap: 'No form this time — the guest just starts chatting.' },
+        { at: 'cb_collect', t: 'Chatbot collects the details',
+          video: 'demo-chatbot.mp4', poster: 'poster-chatbot.png',
+          cap: 'Dates, guests and dive plans — gathered in a natural conversation.' },
+        { at: 'cb_price', t: 'Live prices from Odoo',
+          img: 'still-chat-prices.png',
+          cap: 'Room rates come straight from the Odoo pricelist — never stale numbers.' },
+        { at: 'cb_gw', t: 'Ready to book?',
+          txt: '<b>Yes</b> → the collected details flow into Odoo as a draft quotation.<br/><b>Not yet</b> → the conversation is saved as a lead to nurture later.',
+          cap: 'Either way, nothing typed in the chat is lost.' },
+        ...SHARED_OD,
+      ],
+    },
+  };
+
+  let svg = null, current = 'web', dots = [], hideTimer = null;
+
+  const pop = document.createElement('div');
+  pop.className = 'ia-pop';
+  wrap.appendChild(pop);
+  pop.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+  pop.addEventListener('mouseleave', scheduleHide);
+
+  function el(id) {
+    return svg.querySelector('[data-element-id="' + id + '"]');
+  }
+
+  function applyJourney(key) {
+    current = key;
+    const J = JOURNEYS[key];
+    wrap.style.setProperty('--jc', J.color);
+    caption.textContent = J.caption;
+    const keep = new Set([...J.nodes, ...J.edges, ...J.soft]);
+    svg.querySelectorAll('.djs-element').forEach(g => {
+      const id = g.getAttribute('data-element-id');
+      const base = id.replace(/_label$/, '');
+      const structural = base.indexOf('lane_') === 0 || base.indexOf('Participant_') === 0;
+      g.classList.toggle('ia-dim', !structural && !keep.has(base));
+      g.classList.toggle('ia-hl', J.edges.indexOf(base) !== -1);
+    });
+    hidePop();
+    buildDots();
+  }
+
+  function buildDots() {
+    dots.forEach(d => d.remove());
+    dots = [];
+    const J = JOURNEYS[current];
+    const wr = wrap.getBoundingClientRect();
+    J.steps.forEach((step, i) => {
+      const target = el(step.at);
+      if (!target) return;
+      const r = target.getBoundingClientRect();
+      const dot = document.createElement('button');
+      dot.className = 'ia-dot';
+      dot.type = 'button';
+      dot.textContent = i + 1;
+      dot.setAttribute('aria-label', 'Step ' + (i + 1) + ': ' + step.t);
+      dot.style.left = (r.left - wr.left + r.width / 2) + 'px';
+      dot.style.top = (r.top - wr.top) + 'px';
+      dot.addEventListener('mouseenter', () => showPop(step, i, dot));
+      dot.addEventListener('focus', () => showPop(step, i, dot));
+      dot.addEventListener('mouseleave', scheduleHide);
+      dot.addEventListener('blur', scheduleHide);
+      dot.addEventListener('click', () => showPop(step, i, dot));
+      wrap.appendChild(dot);
+      dots.push(dot);
+    });
+  }
+
+  function showPop(step, i, dot) {
+    clearTimeout(hideTimer);
+    let media = '';
+    if (step.video) {
+      media = '<video src="demos/' + step.video + '" poster="demos/' + (step.poster || '') +
+              '" muted loop playsinline preload="metadata"></video>';
+    } else if (step.img) {
+      media = '<img src="demos/' + step.img + '" alt="" loading="lazy"/>';
+    }
+    pop.innerHTML =
+      '<div class="ia-pop-head"><span class="n">' + (i + 1) + '</span><b>' + step.t + '</b></div>' +
+      media +
+      (step.txt ? '<p class="txt">' + step.txt + '</p>' : '') +
+      '<p class="cap">' + step.cap + '</p>';
+    // position: below dots in the upper half of the diagram, above otherwise
+    const left = Math.max(8, Math.min(dot.offsetLeft - 170, wrap.clientWidth - 348));
+    pop.style.left = left + 'px';
+    pop.classList.add('show');
+    pop.style.visibility = 'hidden';
+    pop.style.top = '0px';
+    requestAnimationFrame(() => {
+      const below = dot.offsetTop < wrap.clientHeight / 2;
+      let top = below ? dot.offsetTop + 24 : dot.offsetTop - pop.offsetHeight - 24;
+      top = Math.max(4, Math.min(top, wrap.clientHeight - pop.offsetHeight - 4));
+      pop.style.top = top + 'px';
+      pop.style.visibility = '';
+      const v = pop.querySelector('video');
+      if (v) { v.currentTime = 0; v.play().catch(function () {}); }
+    });
+  }
+
+  function scheduleHide() {
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(hidePop, 260);
+  }
+  function hidePop() {
+    pop.classList.remove('show');
+    const v = pop.querySelector('video');
+    if (v) v.pause();
+  }
+
+  document.querySelectorAll('.jbtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.jbtn').forEach(b => b.classList.toggle('active', b === btn));
+      applyJourney(btn.dataset.j);
+    });
+  });
+
+  let rzT = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(rzT);
+    rzT = setTimeout(() => { if (svg) { hidePop(); buildDots(); } }, 150);
+  });
+  outer.addEventListener('scroll', hidePop);
+
+  fetch('diagrams/booking-acquisition.svg')
+    .then(r => r.text())
+    .then(txt => {
+      const doc = new DOMParser().parseFromString(txt, 'image/svg+xml');
+      svg = doc.documentElement;
+      svg.removeAttribute('width');
+      svg.removeAttribute('height');
+      svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      wrap.insertBefore(svg, pop);
+      applyJourney('web');
+    })
+    .catch(() => {
+      wrap.innerHTML = '<img src="diagrams/booking-acquisition.svg" style="display:block;width:100%" alt="Booking Acquisition BPMN diagram"/>';
+    });
+})();
+</script>
 </body>
 </html>
