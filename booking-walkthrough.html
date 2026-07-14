@@ -76,6 +76,8 @@
   .ev.end{stroke-width:3.4}
   .nlabel{fill:#475569;font-size:13px;font-family:var(--font);text-anchor:middle;font-weight:500}
   .flabel{fill:#66738a;font-size:12px;font-weight:600;font-family:var(--font);font-style:italic}
+  .flabel.on{fill:var(--jc-ink)}
+  .flabel.dim{fill:#b9c1cd}
   .edge{fill:none;stroke:#d2d8e0;stroke-width:1.5}
   .edge.dim{stroke:#eef1f5}
   .dim .task,.dim .gw,.dim .ev{stroke:#e6eaf0} .dim .nlabel{fill:#c4ccd6}
@@ -370,7 +372,14 @@ const EDGES=[
   ['M690,374 V634 H846',['ota']],
   ['M954,634 H1110 V575',['ota']],
 ];
-const FLABELS=[['Website form',270,156,10],['Books on OTA',238,228,0,'end'],['Chat message',258,420],['Yes',548,215],['Yes',580,495],['Not yet',596,449]];
+const FLABELS=[
+  ['Website form',270,156,10,0,['web']],
+  ['Books on OTA',238,228,0,'end',['ota']],
+  ['Chat message',258,420,0,0,['bot']],
+  ['Yes',548,215,0,0,['web']],
+  ['Yes',580,495,0,0,['bot']],
+  ['Not yet',596,449,0,0,['bot']],
+];
 
 const tail=who=>[
   {node:'draftQ',dot:[600,532],title:'Create draft quotation',lane:'Odoo PMS (Sales)',
@@ -687,7 +696,7 @@ const SCREENS={
 const NS='http://www.w3.org/2000/svg';
 function svgEl(t,a,x){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(x!=null)e.textContent=x;return e;}
 function wrap(l,max){if(!l)return[];const w=l.split(' ');if(w.length<=max)return[l];const m=Math.ceil(w.length/2);return[w.slice(0,m).join(' '),w.slice(m).join(' ')];}
-const edgeEls=[];
+const edgeEls=[],flabelEls=[];
 function build(){
   const lanesG=$('lanes'),edgesG=$('edges'),nodesG=$('nodes');
   LANES.forEach(L=>{
@@ -701,7 +710,7 @@ function build(){
   });
   lanesG.appendChild(svgEl('rect',{class:'lane',x:LANE_X,y:88,width:LANE_W,height:600}));
   EDGES.forEach(([d])=>{const p=svgEl('path',{class:'edge dim',d});edgeEls.push(p);edgesG.appendChild(p);});
-  FLABELS.forEach(f=>{const a={class:'flabel',x:f[1],y:f[2]};if(f[3])a['font-size']=f[3];if(f[4])a['text-anchor']=f[4];edgesG.appendChild(svgEl('text',a,f[0]));});
+  FLABELS.forEach(f=>{const a={class:'flabel',x:f[1],y:f[2]};if(f[3])a['font-size']=f[3];if(f[4])a['text-anchor']=f[4];const t=svgEl('text',a,f[0]);flabelEls.push(t);edgesG.appendChild(t);});
   for(const id in N){const n=N[id];const g=svgEl('g',{id:'nd-'+id,class:'dim'});
     if(n.type==='task'){
       g.appendChild(svgEl('rect',{class:'task',x:n.x-n.w/2,y:n.y-n.h/2,width:n.w,height:n.h,rx:8}));
@@ -735,6 +744,7 @@ function applyJourney(){
   $('jBadge').innerHTML=`<span class="num">${jd.num}</span> ${jd.badge}`;
   $('lgName').textContent=jd.legend;
   EDGES.forEach(([,js],i)=>edgeEls[i].setAttribute('class','edge'+(js.includes(J)?'':' dim')));
+  FLABELS.forEach((f,i)=>flabelEls[i].setAttribute('class','flabel'+((f[5]||[]).includes(J)?' on':' dim')));
   for(const id in N)$('nd-'+id).setAttribute('class',N[id].j.includes(J)?'on':'dim');
   $('trace').setAttribute('d',jd.trace);
   const dotsG=$('dotsG');dotsG.innerHTML='';
