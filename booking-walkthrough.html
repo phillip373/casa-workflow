@@ -21,7 +21,7 @@
   body{margin:0;font-family:var(--font);color:var(--ink);line-height:1.5;
     background:radial-gradient(1100px 520px at 100% -10%,var(--jc-ring),transparent 60%),linear-gradient(180deg,var(--bg),var(--bg2));
     background-attachment:fixed;min-height:100vh}
-  .wrap{max-width:1800px;margin:0 auto;padding:20px 20px 48px}
+  .wrap{max-width:none;margin:0 auto;padding:20px 28px 48px}
 
   .head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
   .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
@@ -68,13 +68,14 @@
 
   .lane{fill:none;stroke:#e6e9ef;stroke-width:1}
   .lane-strip{fill:#f8fafc;stroke:#e6e9ef;stroke-width:1}
-  .lane-label{fill:#8a94a6;font-size:11.5px;font-weight:800;font-family:var(--font)}
+  .lane-label{fill:#8a94a6;font-size:12px;font-weight:800;font-family:var(--font)}
+  .lane-sub{fill:#9aa3b5;font-size:10px;font-weight:600;font-family:var(--font)}
   .task{fill:#fff;stroke:#c9d0da;stroke-width:1.4}
   .gw{fill:#fff;stroke:#c9d0da;stroke-width:1.4}
   .ev{fill:#fff;stroke:#94a3b8;stroke-width:1.8}
   .ev.end{stroke-width:3.4}
   .nlabel{fill:#475569;font-size:13px;font-family:var(--font);text-anchor:middle;font-weight:500}
-  .flabel{fill:#9aa5b4;font-size:11px;font-family:var(--font);font-style:italic}
+  .flabel{fill:#66738a;font-size:12px;font-weight:600;font-family:var(--font);font-style:italic}
   .edge{fill:none;stroke:#d2d8e0;stroke-width:1.5}
   .edge.dim{stroke:#eef1f5}
   .dim .task,.dim .gw,.dim .ev{stroke:#e6eaf0} .dim .nlabel{fill:#c4ccd6}
@@ -279,7 +280,7 @@
         <span class="lg"><span><i id="lgSwatch" style="background:var(--jc)"></i><span id="lgName">Website form path</span></span><span><i style="background:#d2d8e0"></i>Other journeys</span></span>
       </div>
       <div class="svg-scroll">
-        <svg class="flow" viewBox="0 0 1380 620" id="flow" role="img" aria-label="Booking acquisition BPMN walkthrough">
+        <svg class="flow" viewBox="0 0 1380 714" id="flow" role="img" aria-label="Booking acquisition BPMN walkthrough">
           <g id="lanes"></g><g id="edges"></g><path id="trace" class="trace"></path><g id="nodes"></g><g id="dotsG"></g>
         </svg>
       </div>
@@ -323,125 +324,125 @@ const ICO={
 const CTAarr='<span class="pulse">'+ICO.arrb+'</span>';
 
 const LANES=[
-  {name:'Guest',y:88,h:80},{name:'OTAs (Booking / Trip.com)',y:168,h:82},{name:'Channel Manager',y:250,h:84},
-  {name:'Chatbot',y:334,h:84},{name:'Odoo PMS (Sales)',y:418,h:176},
+  {name:'Guest',y:88,h:100},{name:'OTAs',sub:'Booking · Trip.com',y:188,h:100},{name:'Channel Manager',y:288,h:120},
+  {name:'Chatbot',y:408,h:100},{name:'Odoo PMS (Sales)',y:508,h:180},
 ];
 const LANE_X=44, LANE_W=1310;
 const N={
-  start:{x:150,y:128,type:'ev',label:'Guest reaches out',j:['web','bot','ota']},
-  gwCh:{x:250,y:128,type:'gw',label:'Channel?',j:['web','bot','ota']},
-  webForm:{x:400,y:128,w:104,h:52,type:'task',label:'Fill website booking form',j:['web']},
-  gwReadyW:{x:540,y:128,type:'gw',label:'Guest ready to book?',j:['web']},
-  otaBook:{x:400,y:209,w:100,h:56,type:'task',label:'Confirm booking & payment',j:['ota']},
-  cmMap:{x:540,y:292,w:96,h:52,type:'task',label:'Map room & rate plan',j:['ota']},
-  cmSync:{x:690,y:292,w:100,h:52,type:'task',label:'Sync availability to OTAs',j:['ota']},
-  botCollect:{x:360,y:376,w:96,h:50,type:'task',label:'Collect booking details',j:['bot']},
-  botPrice:{x:480,y:376,w:96,h:50,type:'task',label:'Pull prices from pricelist',j:['bot']},
-  gwReadyB:{x:570,y:376,type:'gw',label:'Ready to book?',j:['bot']},
-  endInq:{x:680,y:376,type:'ev',label:'Inquiry closed',end:true,j:[]},
-  draftQ:{x:650,y:468,w:100,h:52,type:'task',label:'Create draft quotation',j:['web','bot']},
-  sendQ:{x:790,y:468,w:96,h:52,type:'task',label:'Send quotation to guest',j:['web','bot']},
-  guestPay:{x:900,y:468,type:'ev',label:'Guest confirms & pays',j:['web','bot']},
-  confirmSO:{x:1010,y:468,w:96,h:52,type:'task',label:'Confirm sales order',j:['web','bot']},
-  gwJoin:{x:1110,y:468,type:'gw',label:'',j:['web','bot','ota']},
-  openFolio:{x:1210,y:468,w:100,h:52,type:'task',label:'Open folio & guest tasks',j:['web','bot','ota']},
-  endBooked:{x:1320,y:468,type:'ev',label:'Booking confirmed',end:true,j:['web','bot','ota']},
-  createSO:{x:900,y:544,w:96,h:52,type:'task',label:'Create confirmed SO',j:['ota']},
+  start:{x:150,y:138,type:'ev',label:'Guest reaches out',j:['web','bot','ota']},
+  gwCh:{x:250,y:138,type:'gw',label:'Channel?',j:['web','bot','ota']},
+  webForm:{x:400,y:138,w:104,h:52,type:'task',label:'Fill website booking form',j:['web']},
+  gwReadyW:{x:540,y:138,type:'gw',label:'Guest ready to book?',j:['web']},
+  otaBook:{x:400,y:238,w:100,h:56,type:'task',label:'Confirm booking & payment',j:['ota']},
+  cmMap:{x:540,y:348,w:96,h:52,type:'task',label:'Map room & rate plan',j:['ota']},
+  cmSync:{x:690,y:348,w:100,h:52,type:'task',label:'Sync availability to OTAs',j:['ota']},
+  botCollect:{x:360,y:458,w:96,h:50,type:'task',label:'Collect booking details',j:['bot']},
+  botPrice:{x:480,y:458,w:96,h:50,type:'task',label:'Pull prices from pricelist',j:['bot']},
+  gwReadyB:{x:570,y:458,type:'gw',label:'Ready to book?',j:['bot']},
+  endInq:{x:680,y:458,type:'ev',label:'Inquiry closed',end:true,j:[]},
+  draftQ:{x:650,y:558,w:100,h:52,type:'task',label:'Create draft quotation',j:['web','bot']},
+  sendQ:{x:790,y:558,w:96,h:52,type:'task',label:'Send quotation to guest',j:['web','bot']},
+  guestPay:{x:900,y:558,type:'ev',label:'Guest confirms & pays',j:['web','bot']},
+  confirmSO:{x:1010,y:558,w:96,h:52,type:'task',label:'Confirm sales order',j:['web','bot']},
+  gwJoin:{x:1110,y:558,type:'gw',label:'',j:['web','bot','ota']},
+  openFolio:{x:1210,y:558,w:100,h:52,type:'task',label:'Open folio & guest tasks',j:['web','bot','ota']},
+  endBooked:{x:1320,y:558,type:'ev',label:'Booking confirmed',end:true,j:['web','bot','ota']},
+  createSO:{x:900,y:634,w:96,h:52,type:'task',label:'Create confirmed SO',j:['ota']},
 };
 const EDGES=[
-  ['M166,128 H233',['web','bot','ota']],
-  ['M267,128 H346',['web']],
-  ['M454,128 H523',['web']],
-  ['M540,145 V468 H598',['web']],
-  ['M250,145 V209 H348',['ota']],
-  ['M250,145 V376 H310',['bot']],
-  ['M410,376 H430',['bot']],
-  ['M528,376 H553',['bot']],
-  ['M587,376 H662',[]],
-  ['M570,393 V468 H598',['bot']],
-  ['M700,468 H740',['web','bot']],
-  ['M838,468 H882',['web','bot']],
-  ['M916,468 H960',['web','bot']],
-  ['M1058,468 H1093',['web','bot']],
-  ['M1127,468 H1158',['web','bot','ota']],
-  ['M1260,468 H1303',['web','bot','ota']],
-  ['M400,237 V292 H490',['ota']],
-  ['M588,292 H638',['ota']],
-  ['M690,318 V544 H850',['ota']],
-  ['M948,544 H1110 V485',['ota']],
+  ['M166,138 H233',['web','bot','ota']],
+  ['M267,138 H346',['web']],
+  ['M454,138 H523',['web']],
+  ['M540,155 V558 H598',['web']],
+  ['M250,155 V238 H348',['ota']],
+  ['M250,155 V458 H310',['bot']],
+  ['M410,458 H430',['bot']],
+  ['M528,458 H553',['bot']],
+  ['M587,458 H662',[]],
+  ['M570,475 V558 H598',['bot']],
+  ['M700,558 H740',['web','bot']],
+  ['M838,558 H882',['web','bot']],
+  ['M916,558 H960',['web','bot']],
+  ['M1058,558 H1093',['web','bot']],
+  ['M1127,558 H1158',['web','bot','ota']],
+  ['M1260,558 H1303',['web','bot','ota']],
+  ['M400,266 V348 H490',['ota']],
+  ['M588,348 H638',['ota']],
+  ['M690,374 V634 H850',['ota']],
+  ['M948,634 H1110 V575',['ota']],
 ];
-const FLABELS=[['Website form',282,118],['Books on OTA',256,192],['Chat message',256,320],['Yes',548,200],['Yes',578,452],['Not yet',596,368]];
+const FLABELS=[['Website form',282,128],['Books on OTA',258,215],['Chat message',258,420],['Yes',548,215],['Yes',580,495],['Not yet',596,449]];
 
 const tail=who=>[
-  {node:'draftQ',dot:[600,442],title:'Create draft quotation',lane:'Odoo PMS (Sales)',
+  {node:'draftQ',dot:[600,532],title:'Create draft quotation',lane:'Odoo PMS (Sales)',
    guest:'Waits just a moment — no account, no payment needed yet.',
    odoo:`Odoo turns the ${who} request into draft quotation S00171 with room + dive lines.`,screen:'odooQuote'},
-  {node:'sendQ',dot:[742,442],title:'Send quotation to guest',lane:'Odoo PMS (Sales)',
+  {node:'sendQ',dot:[742,532],title:'Send quotation to guest',lane:'Odoo PMS (Sales)',
    guest:'Receives the quotation by email seconds later.',
    odoo:'S00171 is emailed automatically; the status moves to Sent.',screen:'emailQuote'},
-  {node:'guestPay',dot:[900,436],title:'Guest confirms & pays',lane:'Guest',
+  {node:'guestPay',dot:[900,526],title:'Guest confirms & pays',lane:'Guest',
    guest:'Opens the email and confirms the booking with one click.',
    odoo:'The online confirmation flips the quotation into a paid order.',screen:'payConfirm'},
-  {node:'confirmSO',dot:[962,442],title:'Confirm sales order',lane:'Odoo PMS (Sales)',
+  {node:'confirmSO',dot:[962,532],title:'Confirm sales order',lane:'Odoo PMS (Sales)',
    guest:'—',
    odoo:'S00171 becomes a confirmed sales order — no retyping, no double entry.',screen:'odooSO'},
-  {node:'openFolio',dot:[1160,442],title:'Open folio & guest tasks',lane:'Odoo PMS (Sales)',
+  {node:'openFolio',dot:[1160,532],title:'Open folio & guest tasks',lane:'Odoo PMS (Sales)',
    guest:'The stay is on the books; the resort starts preparing.',
    odoo:'Folio F0087 opens with auto-generated dive & arrival tasks.',screen:'folioDirect'},
-  {node:'endBooked',dot:[1320,436],title:'Booking confirmed',lane:'Guest',
+  {node:'endBooked',dot:[1320,526],title:'Booking confirmed',lane:'Guest',
    guest:'Gets a warm welcome email with all the details.',
    odoo:`One ${who}, one folio — ready for arrival on Aug 21.`,screen:'welcome'},
 ];
 
 const JOURNEYS={
   web:{num:'1',badge:'Website form · direct channel',legend:'Website form path',next:'bot',nextLabel:'Journey 2 · Chatbot',
-    trace:'M150,128 H540 V468 H1320',
+    trace:'M150,138 H540 V558 H1320',
     steps:[
-      {node:'start',dot:[150,102],title:'Guest visits the website',lane:'Guest',
+      {node:'start',dot:[150,112],title:'Guest visits the website',lane:'Guest',
        guest:'Lands on casaescondida.ph, browses rooms and taps Book now.',
        odoo:'Nothing yet — discovery happens on the public website.',screen:'webSite'},
-      {node:'webForm',dot:[348,102],title:'Fill website booking form',lane:'Guest',
+      {node:'webForm',dot:[348,112],title:'Fill website booking form',lane:'Guest',
        guest:'Fills in name, dates, room and notes — 2 fun divers, late arrival.',
        odoo:'The form posts straight into Sales — no email ping-pong.',screen:'webFormFilled'},
       ...tail('web form')]},
   bot:{num:'2',badge:'Chatbot · direct channel',legend:'Chatbot path',next:'ota',nextLabel:'Journey 3 · OTA direct',
-    trace:'M150,128 H250 V376 H570 V468 H1320',
+    trace:'M150,138 H250 V458 H570 V558 H1320',
     steps:[
-      {node:'start',dot:[150,102],title:'Guest opens the chat',lane:'Guest',
+      {node:'start',dot:[150,112],title:'Guest opens the chat',lane:'Guest',
        guest:'Opens the chat assistant on the website — instant answers, day or night.',
        odoo:'The assistant sits on top of Odoo with the live pricelist behind it.',screen:'chatOpen'},
-      {node:'botCollect',dot:[312,351],title:'Collect booking details',lane:'Chatbot',
+      {node:'botCollect',dot:[312,433],title:'Collect booking details',lane:'Chatbot',
        guest:'Types dates, party size and diving plans in plain language.',
        odoo:'The bot captures Aug 21–24 · 2 guests · fun dives as structured data.',screen:'chatCollect'},
-      {node:'botPrice',dot:[432,351],title:'Pull prices from pricelist',lane:'Chatbot',
+      {node:'botPrice',dot:[432,433],title:'Pull prices from pricelist',lane:'Chatbot',
        guest:'Sees live prices instantly — no waiting for a reply.',
        odoo:'Rates come straight from the Odoo pricelist, so quotes are always current.',screen:'chatPrice'},
-      {node:'gwReadyB',dot:[570,426],title:'Guest ready to book?',lane:'Chatbot',
+      {node:'gwReadyB',dot:[570,520],title:'Guest ready to book?',lane:'Chatbot',
        guest:'One tap: “Yes — book it!”',
        odoo:'The bot hands the structured request over to Sales.',screen:'chatReady'},
       ...tail('chat')]},
   ota:{num:'3',badge:'OTA direct · via channel manager',legend:'OTA path',next:'web',nextLabel:'Journey 1 · Website form',
-    trace:'M150,128 H250 V209 H400 V292 H690 V544 H1110 V468 H1320',
+    trace:'M150,138 H250 V238 H400 V348 H690 V634 H1110 V558 H1320',
     steps:[
-      {node:'start',dot:[150,102],title:'Guest books on the OTA',lane:'Guest',
+      {node:'start',dot:[150,112],title:'Guest books on the OTA',lane:'Guest',
        guest:'Finds Casa Escondida on Booking.com, picks a Seaview room and taps Reserve.',
        odoo:'Nothing yet — discovery & booking live on the OTA.',screen:'otaSite'},
-      {node:'otaBook',dot:[350,181],title:'Confirm booking & payment',lane:'OTAs',
+      {node:'otaBook',dot:[350,210],title:'Confirm booking & payment',lane:'OTAs',
        guest:'Pays the deposit and instantly receives a Booking.com e-voucher.',
        odoo:'The OTA pushes the new booking down to the Channel Manager.',screen:'voucher'},
-      {node:'cmMap',dot:[492,266],title:'Map room & rate plan',lane:'Channel Manager',
+      {node:'cmMap',dot:[492,322],title:'Map room & rate plan',lane:'Channel Manager',
        guest:'Already holds the confirmation — nothing more to do.',
        odoo:'Maps the OTA room type & rate plan onto the matching Odoo room.',screen:'cmMap'},
-      {node:'cmSync',dot:[640,266],title:'Sync availability to OTAs',lane:'Channel Manager',
+      {node:'cmSync',dot:[640,322],title:'Sync availability to OTAs',lane:'Channel Manager',
        guest:'The booked night instantly closes on every channel — no double-booking.',
        odoo:'A night sold anywhere closes everywhere, within minutes.',screen:'cmSync'},
-      {node:'createSO',dot:[852,518],title:'Create confirmed sales order',lane:'Odoo PMS (Sales)',
+      {node:'createSO',dot:[852,608],title:'Create confirmed sales order',lane:'Odoo PMS (Sales)',
        guest:'—',
        odoo:'Odoo auto-creates a confirmed sales order and books the 20% agent commission.',screen:'odooSOota'},
-      {node:'openFolio',dot:[1160,442],title:'Open folio & guest tasks',lane:'Odoo PMS (Sales)',
+      {node:'openFolio',dot:[1160,532],title:'Open folio & guest tasks',lane:'Odoo PMS (Sales)',
        guest:'Receives a warm welcome & pre-arrival email from the resort.',
        odoo:'A folio opens for the stay and prep tasks are generated for the team.',screen:'folioOta'},
-      {node:'endBooked',dot:[1320,436],title:'Booking confirmed',lane:'Guest',
+      {node:'endBooked',dot:[1320,526],title:'Booking confirmed',lane:'Guest',
        guest:'Sees the final confirmation and can manage the stay from any device.',
        odoo:'One booking, one folio — ready for arrival.',screen:'welcome'}]},
 };
@@ -691,11 +692,15 @@ const edgeEls=[];
 function build(){
   const lanesG=$('lanes'),edgesG=$('edges'),nodesG=$('nodes');
   LANES.forEach(L=>{
-    lanesG.appendChild(svgEl('rect',{class:'lane-strip',x:LANE_X,y:L.y,width:24,height:L.h}));
-    lanesG.appendChild(svgEl('rect',{class:'lane',x:LANE_X+24,y:L.y,width:LANE_W-24,height:L.h}));
-    lanesG.appendChild(svgEl('text',{class:'lane-label',x:LANE_X+12,y:L.y+L.h/2,transform:`rotate(-90 ${LANE_X+12} ${L.y+L.h/2})`,'text-anchor':'middle'},L.name));
+    const cy=L.y+L.h/2;
+    lanesG.appendChild(svgEl('rect',{class:'lane-strip',x:LANE_X,y:L.y,width:28,height:L.h}));
+    lanesG.appendChild(svgEl('rect',{class:'lane',x:LANE_X+28,y:L.y,width:LANE_W-28,height:L.h}));
+    const lx=LANE_X+(L.sub?10:16);
+    lanesG.appendChild(svgEl('text',{class:'lane-label',x:lx,y:cy,transform:`rotate(-90 ${lx} ${cy})`,'text-anchor':'middle'},L.name));
+    if(L.sub){const sx=LANE_X+21;
+      lanesG.appendChild(svgEl('text',{class:'lane-sub',x:sx,y:cy,transform:`rotate(-90 ${sx} ${cy})`,'text-anchor':'middle'},L.sub));}
   });
-  lanesG.appendChild(svgEl('rect',{class:'lane',x:LANE_X,y:88,width:LANE_W,height:506}));
+  lanesG.appendChild(svgEl('rect',{class:'lane',x:LANE_X,y:88,width:LANE_W,height:600}));
   EDGES.forEach(([d])=>{const p=svgEl('path',{class:'edge dim',d});edgeEls.push(p);edgesG.appendChild(p);});
   FLABELS.forEach(f=>edgesG.appendChild(svgEl('text',{class:'flabel',x:f[1],y:f[2]},f[0])));
   for(const id in N){const n=N[id];const g=svgEl('g',{id:'nd-'+id,class:'dim'});
