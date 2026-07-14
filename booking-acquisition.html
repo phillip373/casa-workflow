@@ -452,17 +452,36 @@
     dots = [];
     const J = JOURNEYS[current];
     const wr = wrap.getBoundingClientRect();
+    // rects of visible (non-dimmed) labels, so dots never cover text
+    const labelRects = [];
+    svg.querySelectorAll('.djs-element').forEach(g => {
+      const id = g.getAttribute('data-element-id') || '';
+      if (/_label$/.test(id) && !g.classList.contains('ia-dim')) {
+        const lr = g.getBoundingClientRect();
+        if (lr.width && lr.height) labelRects.push(lr);
+      }
+    });
+    const R = 14; // dot radius incl. border
+    const clear = (x, y) => !labelRects.some(lr =>
+      x + R > lr.left && x - R < lr.right && y + R > lr.top && y - R < lr.bottom);
     J.steps.forEach((step, i) => {
       const target = el(step.at);
       if (!target) return;
       const r = target.getBoundingClientRect();
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      // preferred anchors around the shape; first one not covering a label wins
+      const cands = [
+        [cx, r.top], [r.right, r.top], [r.left, r.top],
+        [r.left, cy], [r.right, cy], [cx, r.bottom],
+      ];
+      const [dx, dy] = cands.find(c => clear(c[0], c[1])) || cands[0];
       const dot = document.createElement('button');
       dot.className = 'ia-dot';
       dot.type = 'button';
       dot.textContent = i + 1;
       dot.setAttribute('aria-label', 'Step ' + (i + 1) + ': ' + step.t);
-      dot.style.left = (r.left - wr.left + r.width / 2) + 'px';
-      dot.style.top = (r.top - wr.top) + 'px';
+      dot.style.left = (dx - wr.left) + 'px';
+      dot.style.top = (dy - wr.top) + 'px';
       dot.addEventListener('mouseenter', () => showPop(step, i, dot));
       dot.addEventListener('focus', () => showPop(step, i, dot));
       dot.addEventListener('mouseleave', scheduleHide);
